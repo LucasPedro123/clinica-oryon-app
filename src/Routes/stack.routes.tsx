@@ -9,7 +9,7 @@ export default function StackRoutes() {
     return (
         <Navigator>
             <Screen name='signin' component={SignIn} options={{headerShown: false}}/>
-            <Screen name='signup' component={SignUp}/>
+            <Screen name='signup' component={SignUp} options={{headerShown: false}}/>
         </Navigator>
     )
 }
