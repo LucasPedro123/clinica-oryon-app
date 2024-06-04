@@ -21,17 +21,17 @@ export default function SignIn({ navigation }: any) {
 
     return (
 
-        <ScrollView>
-            <S.ContainerSignIn>
-                <S.LogoContainer>
-                    <S.Logo source={logo} />
-                </S.LogoContainer>
-                <S.Forms>
-                    <S.FormTextWrapper>
-                        <S.SignInTitle>Olá, bem-vindo(a) de volta!</S.SignInTitle>
-                        <S.SignInSubTitle>Complete o Login para continuar.</S.SignInSubTitle>
-                    </S.FormTextWrapper>
-                    <S.FormsContent>
+        <S.ContainerSignIn>
+            <S.LogoContainer>
+                <S.Logo source={logo} />
+            </S.LogoContainer>
+            <S.Forms>
+                <S.FormTextWrapper>
+                    <S.SignInTitle>Olá, bem-vindo(a) de volta!</S.SignInTitle>
+                    <S.SignInSubTitle>Complete o Login para continuar.</S.SignInSubTitle>
+                </S.FormTextWrapper>
+                <S.FormsContent>
+                    <ScrollView>
                         <S.InputWrapper>
                             <S.InputName>Nome</S.InputName>
                             <S.Input placeholder='Por favor, insira seu nome.' />
@@ -86,9 +86,9 @@ export default function SignIn({ navigation }: any) {
                                 </TouchableOpacity>
                             </S.SignUpView>
                         </S.FormsButtonView>
-                    </S.FormsContent>
-                </S.Forms>
-            </S.ContainerSignIn>
-        </ScrollView>
+                    </ScrollView>
+                </S.FormsContent>
+            </S.Forms>
+        </S.ContainerSignIn>
     )
 }
