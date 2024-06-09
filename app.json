@@ -12,9 +12,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lucaspedrof.clinicaoryon"
     },
     "android": {
+      "package": "com.lucaspedrof.clinicaoryon",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -22,6 +24,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f7b4bc3b-74b1-45c8-9706-f14239b923d7"
+      },
+      "googleOAuth": {
+        "clientId": "903653770537-j5ie6g2v5k3otiuejmtvo758d5pu2ig0.apps.googleusercontent.com",
+        "iosClientId": "903653770537-vkplg678q51c9qc7m92f5tg2viddscoa.apps.googleusercontent.com",
+        "androidClientId": "903653770537-vkplg678q51c9qc7m92f5tg2viddscoa.apps.googleusercontent.com",
+        "redirectUri": "https://auth.expo.io/@lucaspedrof/clinica-oryon"
+      }
+    },
+    "owner": "lucaspedrof"
   }
 }
