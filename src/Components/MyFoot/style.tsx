@@ -8,11 +8,12 @@ export const FootContainer = styled.View`
     border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
     border-radius: 10px;
     margin: 35px 2px;
+    padding: 9px 9px;
 `
 export const FootContent = styled.View`
     flex-direction: row;
     justify-content: space-between;
-    padding: 9px 9px;
+    
 `
 export const MyFootTitle = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
@@ -20,7 +21,7 @@ export const MyFootTitle = styled.Text`
     line-height: 25px;
     color: ${STYLE_GUIDE.Colors.gray200};
 `
-export const TextCalories = styled.Text`
+export const TextTotalCalories = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.regular};
     font-size: ${STYLE_GUIDE.FontSize.subHead400};
     line-height: 19px;
@@ -31,7 +32,12 @@ export const TextCalories = styled.Text`
 `
 
 export const MyFootWrapper = styled.View`
-
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+`
+export const MyFoot = styled.View`
+    flex-direction: column;
 `
 export const MyFootButton = styled.View`
     align-self: center;
@@ -52,5 +58,28 @@ export const ButtonText = styled.Text`
     line-height: 20px;
     letter-spacing: 0.1px;
     color: ${STYLE_GUIDE.Colors.white};
+
+`
+
+export const MyFootView = styled.View`
+    flex-direction: column;
+    gap: 5px;
+`
+
+export const FootName = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.regular};
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
+    line-height: 19px;
+    color: ${STYLE_GUIDE.Colors.gray100};
+
+
+`
+export const FootCalories = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.regular};
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
+    line-height: 19px;
+
+    color: ${STYLE_GUIDE.Colors.gray200};
+
 
 `
