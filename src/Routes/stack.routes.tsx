@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import SignIn from '../Components/SignIn';
 import SignUp from '../Components/SignUp';
-import Home from '../Components/Home';
+import Home from '../Screens/Home';
 import { StatusBar } from 'expo-status-bar';
 
 
