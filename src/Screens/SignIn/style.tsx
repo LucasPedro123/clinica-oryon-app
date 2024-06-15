@@ -42,7 +42,7 @@ export const SignInSubTitle = styled.Text`
 export const FormsContent = styled.View`
     width: 100%;
     align-items: center;
-    margin-top: 22px;
+    margin-top: 41px;
     gap: 12px;
     text-align: end;
 `
@@ -116,7 +116,7 @@ export const FormsButtonView = styled.View`
     width: 100%;
     gap: 27px;
     align-items: center;
-    margin-top: 88px;
+    margin-top: 127px;
 `
 export const FormsButton = styled.TouchableOpacity`
     width: 360px;
@@ -163,7 +163,25 @@ export const GoogleAuthView = styled.View`
     width: 173px;
     height: 45px;
 
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 22px;
 `
+
+export const GoogleAuthLogo = styled.Image`
+    width: 23px;
+    height: 23px;
+`   
+export const GoogleAuthText = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
+    font-size: ${STYLE_GUIDE.FontSize.subHead300};
+    line-height: 19px;
+
+    color: #242A31;
+
+
+` 
 
 export const SignUpView = styled.View`
     flex-direction: row;
