@@ -4,7 +4,14 @@ import * as S from './style'
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-export function BottomTab() {
+export function BottomTab({navigation}: any) {
+    function handleNavigateForProfile() {
+        navigation.navigate('profile')
+    }
+    function handleNavigateForHome() {
+        navigation.navigate('home')
+    }
+
     function HomeIcon() {
         return (
             <Feather name="home" size={37} color="white" />
@@ -57,13 +64,13 @@ export function BottomTab() {
 
             <S.BottomTabContainer>
                 <S.TabItems>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{handleNavigateForHome()}}>
                         <HomeIcon />
                     </TouchableOpacity>
                     <TouchableOpacity>
                         <AddedIcon />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{handleNavigateForProfile()}}>
                         <ProfileIcon />
                     </TouchableOpacity>
                 </S.TabItems>

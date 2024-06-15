@@ -6,8 +6,9 @@ import * as S from './style'
 import { UserContext } from '../../Context/User.context';
 import { useContext } from "react";
 import { StatusBar } from "expo-status-bar";
+import { BottomTab } from "../../Components/BottomTab";
 
-export function Profile({navigation}: any) {
+export function Profile({ navigation }: any) {
     const context = useContext(UserContext);
 
     function handleNavigateForHome() {
@@ -23,17 +24,20 @@ export function Profile({navigation}: any) {
     }
 
     return (
-        <S.ProfileContainer>
-            <StatusBar style="dark" />
-            <ProfilePhoto />
-            <S.ProfileName>{context?.User?.name}</S.ProfileName>
-            <S.UserInfoView>
-                <S.UserInfoText>Email: {context?.User?.email}</S.UserInfoText>
-                <S.UserInfoText>Telefone: {context?.User?.phone}</S.UserInfoText>
-            </S.UserInfoView>
-            <TouchableOpacity onPress={()=>{handleNavigateForHome()}}>
-                <S.ProfileExit>Voltar para Home</S.ProfileExit>
-            </TouchableOpacity>
-        </S.ProfileContainer>
+        <>
+            <S.ProfileContainer>
+                <StatusBar style="dark" />
+                <ProfilePhoto />
+                <S.ProfileName>{context?.User?.name}</S.ProfileName>
+                <S.UserInfoView>
+                    <S.UserInfoText>Email: {context?.User?.email}</S.UserInfoText>
+                    <S.UserInfoText>Telefone: {context?.User?.phone}</S.UserInfoText>
+                </S.UserInfoView>
+                <TouchableOpacity onPress={() => { handleNavigateForHome() }}>
+                    <S.ProfileExit>Voltar para Home</S.ProfileExit>
+                </TouchableOpacity>
+            </S.ProfileContainer>
+            <BottomTab navigation={navigation}/>
+        </>
     )
 }
