@@ -10,6 +10,7 @@ export const STYLE_GUIDE = {
         borderColor: "#C6C6C6",
         gray100: "#4F4F4F",
         gray200: "#828282",
+        grayLight: "#D9D9D9",
         emphasis: "#1A80B6",
         alert: "#FF4D4D",
         black: "#000000",
