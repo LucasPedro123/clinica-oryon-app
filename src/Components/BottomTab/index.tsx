@@ -11,6 +11,9 @@ export function BottomTab({navigation}: any) {
     function handleNavigateForHome() {
         navigation.navigate('home')
     }
+    function handleNavigateForSearch() {
+        navigation.navigate('search')
+    }
 
     function HomeIcon() {
         return (
@@ -67,7 +70,7 @@ export function BottomTab({navigation}: any) {
                     <TouchableOpacity onPress={()=>{handleNavigateForHome()}}>
                         <HomeIcon />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{handleNavigateForSearch()}}>
                         <AddedIcon />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>{handleNavigateForProfile()}}>
