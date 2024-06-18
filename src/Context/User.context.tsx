@@ -1,6 +1,4 @@
-
-
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, setDoc, Timestamp, deleteDoc } from 'firebase/firestore';
 import { createContext, useState, ReactNode, useEffect } from "react";
 import { Alert } from 'react-native';
 
@@ -22,6 +20,10 @@ interface IUserPros {
 
     User: any;
     setUser: (user: any) => void;
+
+    newFood: any[];
+    setNewFood: (foods: any[]) => void;
+    removeFood: (foodId: string) => void;
 }
 
 interface IChildren {
@@ -39,7 +41,7 @@ export function UserContextProvider({ children }: IChildren) {
     const [UserPhone, setUserPhone] = useState<number>();
     const [UserPass, setUserPass] = useState<string | undefined>();
     const [User, setUser] = useState<any>();
-
+    const [newFood, setNewFood] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,9 +71,34 @@ export function UserContextProvider({ children }: IChildren) {
         }
     }, [userId]);
 
+    const addNewFood = async (food: any) => {
+        setNewFood(prevFoods => [...prevFoods, food]);
+
+        if (userId) {
+            try {
+                const foodDoc = doc(collection(db, 'users', userId, 'foods'));
+                await setDoc(foodDoc, { ...food, date: Timestamp.now() });
+            } catch (error: any) {
+                Alert.alert('Erro ao salvar alimento', error.message);
+            }
+        }
+    };
+
+    const removeFood = async (foodId: string) => {
+        setNewFood(prevFoods => prevFoods.filter(food => food.foodId !== foodId));
+
+        if (userId) {
+            try {
+                const foodDocRef = doc(db, 'users', userId, 'foods', foodId);
+                await deleteDoc(foodDocRef);
+            } catch (error: any) {
+                Alert.alert('Erro ao excluir alimento', error.message);
+            }
+        }
+    };
 
     return (
-        <UserContext.Provider value={{ setUserName, UserName, setEmail, UserEmail, userId, setUserId, UserPhone, setUserPhone, UserPass, setUserPass, User, setUser }}>
+        <UserContext.Provider value={{ setUserName, UserName, setEmail, UserEmail, userId, setUserId, UserPhone, setUserPhone, UserPass, setUserPass, User, setUser, newFood, setNewFood: addNewFood, removeFood }}>
             {children}
         </UserContext.Provider>
     )
