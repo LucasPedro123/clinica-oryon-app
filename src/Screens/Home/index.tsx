@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { ScrollView, StatusBar } from 'react-native';
+import { ScrollView, StatusBar, TouchableOpacity } from 'react-native';
 import * as S from './style';
 import { UserContext } from '../../Context/User.context';
 import Feather from '@expo/vector-icons/Feather';
@@ -24,7 +24,9 @@ interface User {
 export default function Home({ navigation }: any) {
     const context = useContext(UserContext);
 
-
+    function handleNavigatorForProfile() {
+        navigation.navigate('profile');
+    }
 
     return (
         <>
@@ -42,12 +44,15 @@ export default function Home({ navigation }: any) {
                                 <S.ProfileText>Olá,</S.ProfileText>
                                 <S.ProfileName>{context?.User?.name || ''}</S.ProfileName>
                             </S.ProfileWrapper>
-                            <UserPhoto />
+                            <TouchableOpacity onPress={() => handleNavigatorForProfile()}>
+                                <UserPhoto />
+                            </TouchableOpacity>
+
                         </S.ProfileContent>
                         <Carousel />
                     </LinearGradient>
                     <Chart />
-                    <MyFoot />
+                    <MyFoot navigation={navigation} />
                 </S.HomeContainer>
             </ScrollView>
             <BottomTab navigation={navigation} />
