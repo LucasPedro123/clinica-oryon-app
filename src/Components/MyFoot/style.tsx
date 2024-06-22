@@ -83,3 +83,15 @@ export const FootCalories = styled.Text`
 
 
 `
+
+export const NoFoodMessage = styled.Text`
+    margin: 7px 0px;
+    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
+    line-height: 19px;
+
+    /* Gray2 */
+    color: ${STYLE_GUIDE.Colors.gray100};
+
+
+`
