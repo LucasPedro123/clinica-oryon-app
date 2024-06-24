@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, FlatList, Image, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, FlatList, Image, Dimensions, StyleSheet } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import { STYLE_GUIDE } from '../../Styles/global';
 
 const DATA = [
@@ -34,59 +35,60 @@ export const Carousel = () => {
     ]);
 
     useEffect(() => {
-        if (activeBanner === DATA.length - 1) {
-            const timeId = setTimeout(() => {
+        const interval = setInterval(() => {
+            if (activeBanner === DATA.length - 1) {
                 FlatlistRef.current?.scrollToIndex({
-                    index: 0,
                     animated: true,
+                    index: 0,
                 });
                 setActiveBanner(0);
-            }, 3000);
-            return () => clearTimeout(timeId);
-        }
-        const timeId = setTimeout(() => {
-            FlatlistRef.current?.scrollToIndex({
-                index: activeBanner + 1,
-                animated: true,
-            });
-            setActiveBanner((old) => old + 1);
+            } else {
+                FlatlistRef.current?.scrollToIndex({
+                    animated: true,
+                    index: activeBanner + 1,
+                });
+                setActiveBanner(activeBanner + 1);
+            }
         }, 3000);
-        return () => clearTimeout(timeId);
+
+        return () => clearInterval(interval);
     }, [activeBanner]);
 
     return (
-        <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 20 }}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: -150 }}>
             <FlatList
                 ref={FlatlistRef}
                 data={DATA}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                     <View
                         style={{
                             width: Dimensions.get('screen').width * 0.8,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            height: 180,
+                            height: 180, // Ajuste da altura para garantir visibilidade
                             borderRadius: 30,
-                            marginHorizontal: 20,
+                            marginHorizontal: 10, // Reduzi a margem horizontal para evitar cortes
                         }}
                     >
-                        <Image
+                        <Animatable.Image
+                            animation={activeBanner === index ? 'fadeInLeft' : 'fadeOutRight'}
+                            duration={500}
                             source={{ uri: item.image }}
                             style={{
                                 width: '100%',
                                 height: '100%',
-                                alignSelf: 'center',
                                 borderRadius: 30,
-                                resizeMode: 'cover',
                             }}
+                            resizeMode='cover' // Use 'cover' para preencher a área do container
                         />
                     </View>
                 )}
                 style={{
-                    height: 200,
+                    paddingTop: 20,
+                    height: 200, // Altura do FlatList ajustada para acomodar as imagens
                 }}
                 contentContainerStyle={{
-                    paddingVertical: 20,
+                    paddingHorizontal: 20,
                 }}
                 pagingEnabled
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
@@ -94,21 +96,40 @@ export const Carousel = () => {
                 keyExtractor={(item, index) => String(index)}
                 showsHorizontalScrollIndicator={false}
             />
-            <View style={{ flexDirection: 'row', position: 'absolute', bottom: 0 }}>
+            <View style={styles.pagination}>
                 {DATA.map((_, index) => (
                     <View
                         key={index}
-                       
-                        style={{
-                            width: activeBanner === index ? 12 : 8,
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: activeBanner === index ? `${STYLE_GUIDE.BlueGradient.blue500}` : `${STYLE_GUIDE.Colors.neutral}`,
-                            marginHorizontal: 2,
-                        }}
+                        style={[
+                            styles.paginationDot,
+                            {
+                                width: activeBanner === index ? 12 : 8, // Largura ajustada conforme estado ativo
+                                backgroundColor:
+                                    activeBanner === index
+                                        ? STYLE_GUIDE.BlueGradient.blue500
+                                        : STYLE_GUIDE.Colors.neutral,
+                            },
+                        ]}
                     />
                 ))}
             </View>
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    pagination: {
+        flexDirection: 'row',
+        position: 'absolute',
+        bottom: 10,
+        marginBottom: -30,
+    },
+    paginationDot: {
+        height: 8,
+        borderRadius: 6,
+        backgroundColor: STYLE_GUIDE.Colors.neutral,
+        marginHorizontal: 4,
+    },
+});
+
+export default Carousel;
