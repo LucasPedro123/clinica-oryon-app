@@ -4,16 +4,16 @@ import * as S from './style';
 import { AntDesign } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { STYLE_GUIDE } from '../../Styles/global';
-import logo from '../../../assets/logoApp.png'; // Verifique o caminho correto para o seu logo
+import logo from '../../../assets/logoApp.png'; 
 import { UserContext } from '../../Context/User.context';
 import { BottomTab } from '../../Components/BottomTab';
 
 interface Props {
-    navigation: any; // Defina o tipo correto para navigation conforme necessário
+    navigation: any; 
 }
 
-const API_ID = 'bb4dd8ab'; // Substitua com seu Application ID
-const API_KEY = '3f0dd545aed637f003ebe5c6486dfc5d'; // Substitua com sua API Key
+const API_ID = 'bb4dd8ab';
+const API_KEY = '3f0dd545aed637f003ebe5c6486dfc5d'; 
 
 const Search: React.FC<Props> = ({ navigation }) => {
     const [query, setQuery] = useState<string>('');
@@ -83,7 +83,6 @@ const Search: React.FC<Props> = ({ navigation }) => {
                     )}
                 </S.SearchContainer>
             </ScrollView>
-            <BottomTab navigation={navigation} />
         </>
     );
 };
