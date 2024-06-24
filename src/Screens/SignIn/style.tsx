@@ -130,6 +130,18 @@ export const FormsButton = styled.TouchableOpacity`
 
 
 `
+export const FormsButtonSpinner = styled.View`
+    width: 360px;
+    height: 45px;
+    border-radius: 5px;
+    background: #C2A3D4;
+
+    align-items: center;
+    justify-content: center;
+
+
+
+`
 export const ButtonText = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: ${STYLE_GUIDE.FontSize.subHead200};
