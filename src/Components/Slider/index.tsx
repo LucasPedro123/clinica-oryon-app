@@ -3,15 +3,19 @@ import { View, FlatList, Image, Dimensions, StyleSheet } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { STYLE_GUIDE } from '../../Styles/global';
 
+import carousel1 from '../../../assets/carousel-1.jpg'
+import carousel2 from '../../../assets/carousel-2.jpg'
+import carousel3 from '../../../assets/carousel-3.jpg'
+
 const DATA = [
     {
-        image: 'https://www.atendevoce.com.br/itaim/favImage-clinicaoryon.jpg',
+        image: carousel1,
     },
     {
-        image: 'http://clinicaoryon.com.br/wp-content/uploads/2016/08/estetica_nova.jpg',
+        image: carousel2,
     },
     {
-        image: 'http://clinicaoryon.com.br/wp-content/uploads/2016/08/dr_danilo.jpg',
+        image: carousel3,
     },
 ];
 
@@ -73,7 +77,7 @@ export const Carousel = () => {
                         <Animatable.Image
                             animation={activeBanner === index ? 'fadeInLeft' : 'fadeOutRight'}
                             duration={500}
-                            source={{ uri: item.image }}
+                            source={item.image}
                             style={{
                                 width: '100%',
                                 height: '100%',
