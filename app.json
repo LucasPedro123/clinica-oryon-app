@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "clinica-oryon",
+    "name": "Clinica ORYON",
     "slug": "clinica-oryon",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-app.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/LogoClinicaOryon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,12 +18,12 @@
     "android": {
       "package": "com.lucaspedrof.clinicaoryon",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/LogoClinicaOryon.png",
+        "foregroundImage": "./assets/icon-app.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/LogoClinicaOryon.png"
+      "favicon": "./assets/icon-app.png"
     },
     "extra": {
       "eas": {
