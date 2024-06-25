@@ -57,7 +57,6 @@ export function UserContextProvider({ children }: IChildren) {
         const fetchData = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, 'users'));
-                console.log("Usuário encontrado:", querySnapshot);
                 const users = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data(),
@@ -67,13 +66,11 @@ export function UserContextProvider({ children }: IChildren) {
                 const user = users.find(e => e.userId === userId);
                 if (user) {
                     setUser(user);
-                    console.log("Usuário encontrado:", user);
 
                     const storageRef = ref(storage, `profile_pictures/${userId}.jpg`);
                     const url = await getDownloadURL(storageRef);
 
                     setUserPhoto(url);
-                    console.log("Foto do Usuário: ", url);
                 } else {
                     Alert.alert('Usuário não encontrado', 'Não foi possível encontrar o usuário.');
                 }

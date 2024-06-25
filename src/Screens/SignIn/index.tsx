@@ -31,7 +31,6 @@ export default function SignIn({ navigation }: any) {
             try {
                 const authState = await AsyncStorage.getItem('persistedAuth');
                 
-                console.log(authState)
                 if (authState) {
                     const jsonValue: AuthState = JSON.parse(authState);
                     signInWithEmailAndPassword(auth, jsonValue.email, jsonValue.pass)
@@ -48,7 +47,6 @@ export default function SignIn({ navigation }: any) {
         };
         
         checkPersistedAuth();
-        console.log(context?.userId)
     }, []);
     
     
@@ -58,7 +56,6 @@ export default function SignIn({ navigation }: any) {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const userId = userCredential.user.uid;
-                console.log(userId);
                 context?.setUserId(userId);
                 navigation.navigate('home');
 

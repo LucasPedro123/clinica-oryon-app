@@ -54,7 +54,6 @@ const MyFoot = ({ navigation }: any) => {
                     } as IFood;
                 });
 
-                console.log('Fetched foods:', fetchedFoods);
                 setFoodList(fetchedFoods);
             } catch (error) {
                 console.error('Erro ao buscar alimentos do usuário:', error);
