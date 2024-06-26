@@ -5,7 +5,7 @@ export const ChartContainer = styled.View`
     flex: 1;
     justify-content: center;
     align-items: center;
-    margin-top: 135px;
+    margin-top: 95px;
 `;
 
 export const ChartBorderView = styled.View`

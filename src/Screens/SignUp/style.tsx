@@ -20,7 +20,7 @@ export const Forms = styled.View`
 `
 
 export const FormTextWrapper = styled.View`
-    margin-top: 41px;
+    margin-top: 21px;
 `
 
 export const SignInTitle = styled.Text`
@@ -32,7 +32,7 @@ export const SignInTitle = styled.Text`
 export const SignInSubTitle = styled.Text`
 
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
-    font-size: 14px;
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
     line-height: 19px;
 
     color: ${STYLE_GUIDE.Colors.label};
@@ -42,11 +42,12 @@ export const SignInSubTitle = styled.Text`
 export const FormsContent = styled.View`
     width: 100%;
     align-items: center;
-    margin-top: 41px;
+    margin-top: 15px;
     gap: 12px;
     text-align: end;
 `
 export const InputWrapper = styled.View`
+    margin-top: 11px;
     gap: 7px;
     color: ${STYLE_GUIDE.Colors.gray200};
 `
@@ -82,6 +83,7 @@ export const ForgotPassView = styled.View`
     width: 360px;
     flex-direction: row;
     justify-content: space-between;
+    margin-top: 17px;
 `
 export const ForgotPassText = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
@@ -116,25 +118,13 @@ export const FormsButtonView = styled.View`
     width: 100%;
     gap: 27px;
     align-items: center;
-    margin-top: 127px;
+    margin-top: 58px;
 `
 export const FormsButton = styled.TouchableOpacity`
     width: 360px;
     height: 45px;
     border-radius: 5px;
     background: ${STYLE_GUIDE.Colors.secundary};
-
-    align-items: center;
-    justify-content: center;
-
-
-
-`
-export const FormsButtonSpinner = styled.View`
-    width: 360px;
-    height: 45px;
-    border-radius: 5px;
-    background: #C2A3D4;
 
     align-items: center;
     justify-content: center;
@@ -167,6 +157,27 @@ export const DividerText = styled.Text`
     font-size: ${STYLE_GUIDE.FontSize.subHead400};
 `
 
+
+
+export const SignUpView = styled.View`
+    flex-direction: row;
+    gap: 9px;
+`
+export const SignUpText = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
+    color: ${STYLE_GUIDE.Colors.label};
+
+
+`
+export const SignUpLink = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
+    color: ${STYLE_GUIDE.Colors.highlight};
+
+
+`
+
 export const GoogleAuthView = styled.View`
 
     background: transparent;
@@ -193,23 +204,4 @@ export const GoogleAuthText = styled.Text`
     color: #242A31;
 
 
-` 
-
-export const SignUpView = styled.View`
-    flex-direction: row;
-    gap: 9px;
-`
-export const SignUpText = styled.Text`
-    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
-    font-size: ${STYLE_GUIDE.FontSize.subHead400};
-    color: ${STYLE_GUIDE.Colors.label};
-
-
-`
-export const SignUpLink = styled.Text`
-    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
-    font-size: ${STYLE_GUIDE.FontSize.subHead400};
-    color: ${STYLE_GUIDE.Colors.highlight};
-
-
-`
+`   

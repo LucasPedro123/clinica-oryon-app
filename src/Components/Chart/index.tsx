@@ -31,8 +31,6 @@ export const Chart = () => {
             endOfWeek.setDate(today.getDate() + (6 - today.getDay())); // Define o fim da semana (sábado)
             endOfWeek.setHours(23, 59, 59, 999);
     
-            console.log('startOfWeek:', startOfWeek.toISOString());
-            console.log('endOfWeek:', endOfWeek.toISOString());
     
             try {
                 const foodQuery = query(

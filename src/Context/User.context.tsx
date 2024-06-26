@@ -1,6 +1,8 @@
 import { getFirestore, collection, getDocs, doc, setDoc, Timestamp, deleteDoc } from 'firebase/firestore';
 import { createContext, useState, ReactNode, useEffect } from "react";
 import { Alert } from 'react-native';
+import { storage } from '../Services/fireConfig';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 interface IUserPros {
     UserName: string | undefined;
@@ -24,6 +26,12 @@ interface IUserPros {
     newFood: any[];
     setNewFood: (foods: any[]) => void;
     removeFood: (foodId: string) => void;
+
+    errorForm: string;
+    setErrorForm: (error: string) => void;
+
+    userPhoto: string | undefined;
+    setUserPhoto: (photoURL: string) => void;
 }
 
 interface IChildren {
@@ -41,7 +49,9 @@ export function UserContextProvider({ children }: IChildren) {
     const [UserPhone, setUserPhone] = useState<number>();
     const [UserPass, setUserPass] = useState<string | undefined>();
     const [User, setUser] = useState<any>();
+    const [errorForm, setErrorForm] = useState<any>();
     const [newFood, setNewFood] = useState<any[]>([]);
+    const [userPhoto, setUserPhoto] = useState<string>();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,14 +60,17 @@ export function UserContextProvider({ children }: IChildren) {
                 const users = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data(),
-                    userId: doc.data().userId 
+                    userId: doc.data().userId
                 }));
 
                 const user = users.find(e => e.userId === userId);
-
                 if (user) {
                     setUser(user);
-                    console.log("Usuário encontrado:", user); 
+
+                    const storageRef = ref(storage, `profile_pictures/${userId}.jpg`);
+                    const url = await getDownloadURL(storageRef);
+
+                    setUserPhoto(url);
                 } else {
                     Alert.alert('Usuário não encontrado', 'Não foi possível encontrar o usuário.');
                 }
@@ -98,7 +111,7 @@ export function UserContextProvider({ children }: IChildren) {
     };
 
     return (
-        <UserContext.Provider value={{ setUserName, UserName, setEmail, UserEmail, userId, setUserId, UserPhone, setUserPhone, UserPass, setUserPass, User, setUser, newFood, setNewFood: addNewFood, removeFood }}>
+        <UserContext.Provider value={{ setUserName, UserName, setEmail, UserEmail, userId, setUserId, UserPhone, setUserPhone, UserPass, setUserPass, User, setUser, newFood, setNewFood: addNewFood, removeFood, errorForm, setErrorForm, userPhoto, setUserPhoto }}>
             {children}
         </UserContext.Provider>
     )

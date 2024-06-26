@@ -35,9 +35,15 @@ export const ProfileName = styled.Text`
 export const UserPhoto = styled.View`
     width: 50px;
     height: 50px;
+    border-radius: 100px;
     background-color: ${STYLE_GUIDE.Colors.white};
 
     align-items: center;
     justify-content: center;
 
+`
+
+export const ProfileImage = styled.Image`
+    width: 100%;
+    height: 100%;
 `

@@ -52,3 +52,11 @@ export const ProfileExit = styled.Text`
 
     margin-top: 105px;
 `
+
+export const ProfileImage = styled.Image`
+    width: 150px;
+    height: 144px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    border: 1px solid ${STYLE_GUIDE.Colors.primary}
+`
