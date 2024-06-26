@@ -1,19 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { ScrollView, Text, TouchableOpacity, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as S from './style';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { auth } from '../../Services/fireConfig';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri } from 'expo-auth-session';
 import GoogleLogo from '../../../assets/GoogleLogo.png';
 import logo from '../../../assets/logoApp.png';
 import { UserContext } from '../../Context/User.context';
 import { STYLE_GUIDE } from '../../Styles/global';
-
-WebBrowser.maybeCompleteAuthSession();
 
 const db = getFirestore();
 
@@ -33,39 +28,6 @@ export default function SignUp({ navigation }: any) {
     const [phoneError, setPhoneError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [generalError, setGeneralError] = useState('');
-
-    const [accessToken, setAccessToken] = useState<string | undefined>(undefined);
-    const [user, setUser] = useState<any>(null);
-
-    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-        clientId: process.env.CLIENT_ID,
-        iosClientId: process.env.IOS_CLIENT_ID,
-        androidClientId: process.env.ANDROID_CLIENT_ID,
-        redirectUri: makeRedirectUri({
-            native: 'com.lucaspedrof.clinicaoryon:/oauthredirect',
-        }),
-    });
-
-    function handleNavigateForSignIn() {
-        navigation.navigate('signin');
-    }
-
-    useEffect(() => {
-        if (response?.type === "success") {
-            const { id_token } = response.params;
-            const credential = GoogleAuthProvider.credential(id_token);
-
-            signInWithCredential(auth, credential)
-                .then((userCredential) => {
-                    setUser(userCredential.user);
-                    Alert.alert('Login bem-sucedido', 'Bem-vindo!');
-                    navigation.navigate('home');
-                })
-                .catch((error) => {
-                    Alert.alert('Erro ao fazer login com Google', error.message);
-                });
-        }
-    }, [response]);
 
     const validateEmail = (email: string) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -94,6 +56,13 @@ export default function SignUp({ navigation }: any) {
         }
 
         try {
+            const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+            if (signInMethods.length > 0) {
+                setEmailError(true);
+                setGeneralError('Email já está em uso.');
+                return;
+            }
+
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const userId = userCredential.user.uid;
 
@@ -114,6 +83,10 @@ export default function SignUp({ navigation }: any) {
         }
     };
 
+    function handleNavigateForSignIn() {
+        navigation.navigate('signin');
+    }
+
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
             <S.ContainerSignIn>
@@ -122,8 +95,8 @@ export default function SignUp({ navigation }: any) {
                 </S.LogoContainer>
                 <S.Forms>
                     <S.FormTextWrapper>
-                        <S.SignInTitle>Olá, bem-vindo(a)!</S.SignInTitle>
-                        <S.SignInSubTitle>Complete o registro para continuar.</S.SignInSubTitle>
+                        <S.SignInTitle>Crie a sua conta</S.SignInTitle>
+                        <S.SignInSubTitle>Conecte-se para continuar.</S.SignInSubTitle>
                     </S.FormTextWrapper>
                     <S.FormsContent>
                         <ScrollView>
@@ -133,7 +106,7 @@ export default function SignUp({ navigation }: any) {
                                     placeholder="Por favor, insira seu nome."
                                     value={name}
                                     onChangeText={setName}
-                                    style={{ borderColor: nameError ? 'red' : STYLE_GUIDE.Colors.borderColor }}
+                                    style={{ borderColor: nameError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
                                 />
                             </S.InputWrapper>
                             <S.InputWrapper>
@@ -143,8 +116,8 @@ export default function SignUp({ navigation }: any) {
                                     placeholder="Por favor, insira seu telefone."
                                     value={phone}
                                     onChangeText={setPhone}
-                                    maxLength={11} 
-                                    style={{ borderColor: phoneError ? 'red' : STYLE_GUIDE.Colors.borderColor }}
+                                    maxLength={11}
+                                    style={{ borderColor: phoneError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
                                 />
                             </S.InputWrapper>
                             <S.InputWrapper>
@@ -154,12 +127,12 @@ export default function SignUp({ navigation }: any) {
                                     placeholder="Por favor, insira seu E-mail."
                                     value={email}
                                     onChangeText={setEmail}
-                                    style={{ borderColor: emailError ? 'red' : STYLE_GUIDE.Colors.borderColor }}
+                                    style={{ borderColor: emailError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
                                 />
                             </S.InputWrapper>
                             <S.InputWrapper>
                                 <S.InputName>Senha</S.InputName>
-                                <S.PasswordView style={{ borderColor: passwordError ? 'red' : STYLE_GUIDE.Colors.borderColor }}>
+                                <S.PasswordView style={{ borderColor: passwordError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}>
                                     <S.InputPassword
                                         placeholder="Por favor, insira sua senha."
                                         secureTextEntry={passIsVisible}
@@ -188,7 +161,7 @@ export default function SignUp({ navigation }: any) {
                                     <S.DividerText>Ou com</S.DividerText>
                                     <S.Divider />
                                 </S.DividerView>
-                                <TouchableOpacity onPress={() => promptAsync()}>
+                                <TouchableOpacity>
                                     <S.GoogleAuthView>
                                         <S.GoogleAuthLogo source={GoogleLogo} />
                                         <S.GoogleAuthText>Google</S.GoogleAuthText>
