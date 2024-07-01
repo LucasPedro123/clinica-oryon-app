@@ -55,7 +55,7 @@ export const Chart = () => {
     
                 foods.forEach((food: any) => {
                     const dayOfWeek = food.date.toDate().getDay();
-                    caloriesByDay[dayOfWeek] += food.nutrients.ENERC_KCAL;
+                    caloriesByDay[dayOfWeek] += food.calories;
                 });
     
                 const chartData: DataPoint[] = [
