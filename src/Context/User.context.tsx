@@ -75,7 +75,7 @@ export function UserContextProvider({ children }: IChildren) {
                     Alert.alert('Usuário não encontrado', 'Não foi possível encontrar o usuário.');
                 }
             } catch (error: any) {
-                Alert.alert('Erro ao buscar dados', error.message);
+                console.log('Usuário não encontrado ou foto não encontrada: ', error.message)
             }
         };
 
@@ -85,16 +85,20 @@ export function UserContextProvider({ children }: IChildren) {
     }, [userId]);
 
     const addNewFood = async (food: any) => {
-        setNewFood(prevFoods => [...prevFoods, food]);
-
-        if (userId) {
-            try {
-                const foodDoc = doc(collection(db, 'users', userId, 'foods'));
-                await setDoc(foodDoc, { ...food, date: Timestamp.now() });
-            } catch (error: any) {
-                Alert.alert('Erro ao salvar alimento', error.message);
+        setNewFood(prevFoods => {
+            const updatedFoods = [...prevFoods, food];
+    
+            if (userId) {
+                try {
+                    const foodDoc = doc(collection(db, 'users', userId, 'foods'));
+                    setDoc(foodDoc, { ...food, date: Timestamp.now() });
+                } catch (error: any) {
+                    Alert.alert('Erro ao salvar alimento', error.message);
+                }
             }
-        }
+    
+            return updatedFoods;
+        });
     };
 
     const removeFood = async (foodId: string) => {

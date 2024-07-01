@@ -14,9 +14,9 @@ interface Nutrients {
 }
 
 interface IFood {
-    label: string;
-    nutrients: Nutrients;
-    foodId: string;
+    name: string;
+    calories: number;
+    id: string;
     date: Timestamp;
 }
 
@@ -49,7 +49,7 @@ const MyFoot = ({ navigation }: any) => {
                     console.log('Doc Data:', doc.data());
                     return {
                         ...doc.data(),
-                        foodId: doc.id,
+                        id: doc.id,
                         date: doc.data().date.toDate()
                     } as IFood;
                 });
@@ -64,11 +64,10 @@ const MyFoot = ({ navigation }: any) => {
         fetchUserFoods();
     }, [context?.userId, context?.newFood]);
 
-    const totalCaloriesToday = foodList.reduce((total, food) => total + food.nutrients.ENERC_KCAL, 0).toFixed(2);
-
+    const totalCaloriesToday = foodList.reduce((total, food) => total + food.calories, 0).toFixed(2);
     const handleRemoveFood = async (foodId: string) => {
         await context?.removeFood(foodId);
-        setFoodList(prevFoods => prevFoods.filter(food => food.foodId !== foodId));
+        setFoodList(prevFoods => prevFoods.filter(food => food.id !== foodId));
     };
 
     function handleNavigateForSearch() {
@@ -86,10 +85,10 @@ const MyFoot = ({ navigation }: any) => {
                     <S.MyFoot key={index}>
                         <S.MyFootWrapper>
                             <S.MyFootView>
-                                <S.FootName>{food.label}</S.FootName>
-                                <S.FootCalories>{`${food.nutrients.ENERC_KCAL.toFixed(0)} Kcal`}</S.FootCalories>
+                                <S.FootName>{food.name}</S.FootName>
+                                <S.FootCalories>{`${food.calories.toFixed(0)} Kcal`}</S.FootCalories>
                             </S.MyFootView>
-                            <TouchableOpacity onPress={() => handleRemoveFood(food.foodId)}>
+                            <TouchableOpacity onPress={() => handleRemoveFood(food.id)}>
                                 <Feather name="trash-2" size={24} color="black" />
                             </TouchableOpacity>
                         </S.MyFootWrapper>

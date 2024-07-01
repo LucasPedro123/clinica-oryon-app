@@ -37,7 +37,7 @@ export const FormInputContent = styled.View`
 
 export const FootItems = styled.View`
     gap: 22px;
-    margin-top: 26px;
+    margin: 26px 0px;
 `
 
 export const FootItem = styled.View`
@@ -85,9 +85,56 @@ export const FootCalories = styled.Text`
     line-height: 22px;
     color: ${STYLE_GUIDE.Colors.black};
 `
-export const ButtonAdd = styled.TouchableOpacity`
+export const ButtonAdd = styled.View`
     flex-direction: row;
     align-items: center;
     gap: 36px;
 `
 
+export const ModalView = styled.View`
+    flex: 1;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #f0f0f0;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+`;
+
+export const ModalWrapper = styled.View`
+    padding-top: 50px;
+    align-items: center;
+`;
+
+export const ModalTitle = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
+    font-size: ${STYLE_GUIDE.FontSize.subHead200};
+    color: ${STYLE_GUIDE.Colors.black};
+    margin-bottom: 10px;
+`;
+
+export const ModalPortion = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.regular};
+    font-size: ${STYLE_GUIDE.FontSize.subHead300};
+    color: ${STYLE_GUIDE.Colors.black};
+    margin-bottom: 5px;
+`;
+
+export const ModalCalories = styled.Text`
+    color: ${STYLE_GUIDE.Colors.secundary};
+    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
+    font-size: ${STYLE_GUIDE.FontSize.subHead300};
+    margin-bottom: 20px;
+`;
+
+export const ModalContent = styled.View`
+    flex: 1;
+    width: 100%;
+    padding-top: 20px;
+`;
+
+export const ModalText = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.regular};
+    font-size: ${STYLE_GUIDE.FontSize.subHead300};
+    color: ${STYLE_GUIDE.Colors.black};
+    margin-bottom: 10px;
+`;
