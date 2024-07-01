@@ -1,52 +1,57 @@
-import React, { useContext, useState } from 'react';
-import { View, TouchableOpacity, FlatList, ActivityIndicator, TextInput, ScrollView } from 'react-native';
+import React, { FC, useContext, useRef, useState } from 'react';
+import { ScrollView, ActivityIndicator, TouchableOpacity, Pressable, Text, View } from 'react-native';
 import * as S from './style';
 import { AntDesign } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { STYLE_GUIDE } from '../../Styles/global';
-import logo from '../../../assets/logoApp.png'; 
+import logo from '../../../assets/logoApp.png';
 import { UserContext } from '../../Context/User.context';
-import { BottomTab } from '../../Components/BottomTab';
+import dataFood from '../../../assets/data/foods.data.json';
+import { Modalize } from 'react-native-modalize';
 
 interface Props {
-    navigation: any; 
+    navigation: any;
 }
 
-const API_ID = 'bb4dd8ab';
-const API_KEY = '3f0dd545aed637f003ebe5c6486dfc5d'; 
-
 const Search: React.FC<Props> = ({ navigation }) => {
+    const modalizeRef = useRef<Modalize>(null);
+    const [selectedFood, setSelectedFood] = useState<any>(null);
+
     const [query, setQuery] = useState<string>('');
     const [results, setResults] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const context = useContext(UserContext)
+    const context = useContext(UserContext);
 
-    const searchFood = async () => {
+    const searchFood = () => {
         if (!query) return;
 
         setLoading(true);
         try {
-            const response = await fetch(`https://api.edamam.com/api/food-database/v2/parser?ingr=${query}&app_id=${API_ID}&app_key=${API_KEY}&language=pt-br`);
-            const data = await response.json();
-            setResults(data.hints);
+            const filteredFoods = dataFood.foodItems.filter((item: any) =>
+                item.name.toLowerCase().includes(query.toLowerCase())
+            );
+            setResults(filteredFoods);
         } catch (error) {
-            console.error(error);
+            console.error('Error filtering foods:', error);
         } finally {
             setLoading(false);
         }
     };
 
     const handleAddFood = (food: any) => {
-        context?.setNewFood(food)
+        context?.setNewFood(food);
+        navigation.navigate('home');
+    };
 
-        navigation.navigate('home')
+    const onOpen = (food: any) => {
+        setSelectedFood(food);
+        modalizeRef.current?.open();
     };
 
     return (
         <>
             <ScrollView>
-
                 <S.SearchContainer>
                     <StatusBar style='dark' />
                     <S.ImageLogo source={logo} />
@@ -62,27 +67,82 @@ const Search: React.FC<Props> = ({ navigation }) => {
                         </S.FormInputContent>
                     </S.FormContainer>
                     {loading ? (
-                        <ActivityIndicator size="large" color={`${STYLE_GUIDE.Colors.secundary}`} style={{ marginTop: 24 }} />
+                        <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} style={{ marginTop: 24 }} />
                     ) : (
-
-                            <S.FootItems>
-
-                                {results.map(item => (
+                        <S.FootItems>
+                            {results.slice(0, 30).map((item, index) => (
+                                <Pressable key={index} onPress={() => onOpen(item)}>
                                     <S.FootItem>
                                         <S.FootNameWrapper>
-                                            <S.FootTitle>{item.food.label.substr(0, 16)}</S.FootTitle>
-                                            <S.FootSubTitle>{item.food.category}</S.FootSubTitle>
+                                            <S.FootTitle>{item.name.substring(0, 22)}</S.FootTitle>
+                                            <S.FootSubTitle>{item.portion.substring(0, 20)}</S.FootSubTitle>
                                         </S.FootNameWrapper>
-                                        <S.ButtonAdd onPress={() => handleAddFood(item.food)}>
-                                            <S.FootCalories>{item.food.nutrients?.ENERC_KCAL.toFixed(0) || 0} kcal</S.FootCalories>
-                                            <AntDesign name="pluscircle" size={31} color={STYLE_GUIDE.Colors.secundary} />
+                                        <S.ButtonAdd>
+                                            <S.FootCalories>{item.calories} kcal</S.FootCalories>
+                                            <TouchableOpacity onPress={() => handleAddFood(item)}>
+                                                <AntDesign name="pluscircle" size={31} color={STYLE_GUIDE.Colors.secundary} />
+                                            </TouchableOpacity>
                                         </S.ButtonAdd>
                                     </S.FootItem>
-                                ))}
-                            </S.FootItems>
+                                </Pressable>
+                            ))}
+                        </S.FootItems>
                     )}
                 </S.SearchContainer>
             </ScrollView>
+            <Modalize
+                ref={modalizeRef}
+                snapPoint={180}
+                onClosed={() => setSelectedFood(null)}
+            >
+                {selectedFood && (
+                    <S.ModalView>
+                        <S.ModalWrapper>
+                            <S.ModalTitle >{selectedFood.name}</S.ModalTitle>
+                            <S.ModalPortion >{selectedFood.portion}</S.ModalPortion>
+                            <S.ModalCalories>{selectedFood.calories} kcal</S.ModalCalories>
+                        </S.ModalWrapper>
+
+                        <S.ModalContent>
+                            <S.ModalText>
+                                1. Evite refrigerantes comuns e bebidas alcoólicas; substitua por
+                                água, refrigerantes dietéticos e sucos diet ou light.
+                            </S.ModalText>
+                            <S.ModalText>
+                                2. Evite usar açúcar. Use adoçantes, tais como: Adocyl, Aspa
+                                Sweet, Dietil, Doce Menor, Finn, Frutak, Gold, Línea,
+                                Low, Splenda, Stevia, Zero Cal etc.
+                            </S.ModalText>
+                            <S.ModalText>
+                                3. Temperos sem restrição em seu uso: limão, alho, cheiro-verde,
+                                pimenta, curry, estragão, raiz forte, salsão, gengibre, louro,
+                                hortelã, canela, cominho, tomilho, alecrim, noz-moscada, grão
+                                de mostarda, vinagre.
+                            </S.ModalText>
+                            <S.ModalText>
+                                4. À vontade: café, chá e limonada sem açúcar ou com adoçante.
+                            </S.ModalText>
+                            <S.ModalText>
+                                5. Água é fonte de vida: beba, no mínimo, 1 litro e meio por dia.
+                            </S.ModalText>
+                            <S.ModalText>
+                                6. Pratique exercícios. Se não houver contra-indicação, dedique-
+                                se às atividades físicas que lhe agradem. Divirta-se!
+                            </S.ModalText>
+                            <S.ModalText>
+                                7. Coma devagar, mastigando bem os alimentos.
+                            </S.ModalText>
+                            <S.ModalText>
+                                8. Ingira, no máximo, 1 copo de líquido durante as refeições.
+                            </S.ModalText>
+                            <S.ModalText>
+                                9. Medicação prescrita é individual e intransferível. Evite álcool durante o uso.
+                            </S.ModalText>
+                        </S.ModalContent>
+                    </S.ModalView>
+                )}
+
+            </Modalize>
         </>
     );
 };
