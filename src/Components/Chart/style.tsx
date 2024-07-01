@@ -5,11 +5,11 @@ export const ChartContainer = styled.View`
     flex: 1;
     justify-content: center;
     align-items: center;
-    margin-top: 95px;
+    margin-top: 75px;
 `;
 
 export const ChartBorderView = styled.View`
-    border: 2px solid ${STYLE_GUIDE.Colors.borderColor};
+    border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
     border-radius: 10px;
 `;
 export const ChartView = styled.View`
