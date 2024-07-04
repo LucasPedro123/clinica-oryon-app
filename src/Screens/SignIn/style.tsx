@@ -5,6 +5,7 @@ import { STYLE_GUIDE } from '../../Styles/global'
 
 export const ContainerSignIn = styled.View`
     flex: 1;
+    height: 100%;
     justify-content: center;
     align-items: center;
 `
@@ -151,6 +152,7 @@ export const ButtonText = styled.Text`
 `
 export const DividerView = styled.View`
     flex-direction: row;
+    width: 360px;
     justify-content: space-between;
     align-items: center;
 `

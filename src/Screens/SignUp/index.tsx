@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { ScrollView, Text, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { ScrollView, Text, TouchableOpacity, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as S from './style';
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
@@ -28,6 +28,10 @@ export default function SignUp({ navigation }: any) {
     const [phoneError, setPhoneError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [generalError, setGeneralError] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // State to manage loading state
+
+    const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // Estado para armazenar a altura do dispositivo
+
 
     const validateEmail = (email: string) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -56,6 +60,8 @@ export default function SignUp({ navigation }: any) {
         }
 
         try {
+            setIsLoading(true); // Start loading spinner
+
             const signInMethods = await fetchSignInMethodsForEmail(auth, email);
             if (signInMethods.length > 0) {
                 setEmailError(true);
@@ -65,8 +71,6 @@ export default function SignUp({ navigation }: any) {
 
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const userId = userCredential.user.uid;
-
-            context?.setUserId(userId);
 
             await addDoc(collection(db, 'users'), {
                 userId,
@@ -79,7 +83,12 @@ export default function SignUp({ navigation }: any) {
 
             navigation.navigate('signin');
         } catch (error: any) {
-            Alert.alert('Erro ao registrar', error.message);
+            if (error.code == 'auth/email-already-in-use') {
+                setEmailError(true);
+            }
+            setGeneralError('Erro ao criar conta. Por favor, tente novamente.');
+        } finally {
+            setIsLoading(false); // Stop loading spinner
         }
     };
 
@@ -87,9 +96,16 @@ export default function SignUp({ navigation }: any) {
         navigation.navigate('signin');
     }
 
+    useEffect(() => {
+        setScreenHeight(Dimensions.get('window').height + 30);
+
+
+
+    }, []);
+
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <S.ContainerSignIn>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', height: screenHeight - 5 }} keyboardShouldPersistTaps="handled">
+            <S.ContainerSignIn style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }} >
                 <S.LogoContainer>
                     <S.Logo source={logo} />
                 </S.LogoContainer>
@@ -99,82 +115,73 @@ export default function SignUp({ navigation }: any) {
                         <S.SignInSubTitle>Conecte-se para continuar.</S.SignInSubTitle>
                     </S.FormTextWrapper>
                     <S.FormsContent>
-                        <ScrollView>
-                            <S.InputWrapper>
-                                <S.InputName>Nome</S.InputName>
-                                <S.Input
-                                    placeholder="Por favor, insira seu nome."
-                                    value={name}
-                                    onChangeText={setName}
-                                    style={{ borderColor: nameError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
+                        <S.InputWrapper>
+                            <S.InputName>Nome</S.InputName>
+                            <S.Input
+                                placeholder="Por favor, insira seu nome."
+                                value={name}
+                                onChangeText={setName}
+                                
+                                style={{ borderColor: nameError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
+                            />
+                        </S.InputWrapper>
+                        <S.InputWrapper>
+                            <S.InputName>Número de Telefone</S.InputName>
+                            <S.Input
+                                keyboardType="phone-pad"
+                                placeholder="Por favor, insira seu telefone."
+                                value={phone}
+                                onChangeText={setPhone}
+                                maxLength={11}
+                                style={{ borderColor: phoneError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
+                            />
+                        </S.InputWrapper>
+                        <S.InputWrapper>
+                            <S.InputName>Email</S.InputName>
+                            <S.Input
+                                keyboardType="email-address"
+                                placeholder="Por favor, insira seu E-mail."
+                                value={email}
+                                onChangeText={setEmail}
+                                style={{ borderColor: emailError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
+                            />
+                        </S.InputWrapper>
+                        <S.InputWrapper>
+                            <S.InputName>Senha</S.InputName>
+                            <S.PasswordView style={{ borderColor: passwordError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}>
+                                <S.InputPassword
+                                    placeholder="Por favor, insira sua senha."
+                                    secureTextEntry={passIsVisible}
+                                    value={password}
+                                    onChangeText={setPassword}
                                 />
-                            </S.InputWrapper>
-                            <S.InputWrapper>
-                                <S.InputName>Número de Telefone</S.InputName>
-                                <S.Input
-                                    keyboardType="phone-pad"
-                                    placeholder="Por favor, insira seu telefone."
-                                    value={phone}
-                                    onChangeText={setPhone}
-                                    maxLength={11}
-                                    style={{ borderColor: phoneError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
-                                />
-                            </S.InputWrapper>
-                            <S.InputWrapper>
-                                <S.InputName>Email</S.InputName>
-                                <S.Input
-                                    keyboardType="email-address"
-                                    placeholder="Por favor, insira seu E-mail."
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    style={{ borderColor: emailError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
-                                />
-                            </S.InputWrapper>
-                            <S.InputWrapper>
-                                <S.InputName>Senha</S.InputName>
-                                <S.PasswordView style={{ borderColor: passwordError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}>
-                                    <S.InputPassword
-                                        placeholder="Por favor, insira sua senha."
-                                        secureTextEntry={passIsVisible}
-                                        value={password}
-                                        onChangeText={setPassword}
-                                    />
-                                    <TouchableOpacity onPress={() => setPassIsVisible(!passIsVisible)}>
-                                        <Feather name={passIsVisible ? 'eye-off' : 'eye'} size={18} />
-                                    </TouchableOpacity>
-                                </S.PasswordView>
-                            </S.InputWrapper>
-                            <S.ForgotPassView>
-                                <S.CheckBoxView>
-                                    <S.CheckBox onPress={() => setCheckIsVisible(!checkIsVisible)}>
-                                        <Text>{checkIsVisible ? <Feather name="check" /> : ''}</Text>
-                                    </S.CheckBox>
-                                    <S.CheckBoxText>Lembre-me</S.CheckBoxText>
-                                </S.CheckBoxView>
-                            </S.ForgotPassView>
-                            <S.FormsButtonView>
-                                <S.FormsButton onPress={handleSignUp}>
-                                    <S.ButtonText>Registrar</S.ButtonText>
-                                </S.FormsButton>
-                                <S.DividerView>
-                                    <S.Divider />
-                                    <S.DividerText>Ou com</S.DividerText>
-                                    <S.Divider />
-                                </S.DividerView>
-                                <TouchableOpacity>
-                                    <S.GoogleAuthView>
-                                        <S.GoogleAuthLogo source={GoogleLogo} />
-                                        <S.GoogleAuthText>Google</S.GoogleAuthText>
-                                    </S.GoogleAuthView>
+                                <TouchableOpacity onPress={() => setPassIsVisible(!passIsVisible)}>
+                                    <Feather name={passIsVisible ? 'eye-off' : 'eye'} size={18} />
                                 </TouchableOpacity>
-                                <S.SignUpView>
-                                    <S.SignUpText>Já possui uma conta?</S.SignUpText>
-                                    <TouchableOpacity onPress={handleNavigateForSignIn}>
-                                        <S.SignUpLink>Login</S.SignUpLink>
-                                    </TouchableOpacity>
-                                </S.SignUpView>
-                            </S.FormsButtonView>
-                        </ScrollView>
+                            </S.PasswordView>
+                        </S.InputWrapper>
+
+                        <S.FormsButtonView>
+                            <S.FormsButton onPress={handleSignUp} disabled={isLoading} style={{ backgroundColor: isLoading ? '#C2A3D4' : STYLE_GUIDE.Colors.secundary }}>
+                                {isLoading ? (
+                                    <ActivityIndicator size="small" color={STYLE_GUIDE.Colors.white} />
+                                ) : (
+                                    <S.ButtonText>Registrar</S.ButtonText>
+                                )}
+                            </S.FormsButton>
+                            <S.DividerView>
+                                <S.Divider />
+                                <S.DividerText>Ou</S.DividerText>
+                                <S.Divider />
+                            </S.DividerView>
+
+                            <S.SignUpView>
+                                <S.SignUpText>Já possui uma conta?</S.SignUpText>
+                                <TouchableOpacity onPress={handleNavigateForSignIn}>
+                                    <S.SignUpLink>Login</S.SignUpLink>
+                                </TouchableOpacity>
+                            </S.SignUpView>
+                        </S.FormsButtonView>
                     </S.FormsContent>
                 </S.Forms>
             </S.ContainerSignIn>
