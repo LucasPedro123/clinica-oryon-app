@@ -13,7 +13,9 @@ export const FootContainer = styled.View`
 export const FootContent = styled.View`
     flex-direction: row;
     justify-content: space-between;
-    
+    margin: 0px 5px;
+    margin-bottom: -30px;
+    margin-top: 10px;
 `
 export const MyFootTitle = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
@@ -38,6 +40,7 @@ export const MyFootWrapper = styled.View`
 `
 export const MyFoot = styled.View`
     flex-direction: column;
+    margin: 5px 0px;
 `
 export const MyFootButton = styled.View`
     align-self: center;
@@ -63,7 +66,6 @@ export const ButtonText = styled.Text`
 
 export const MyFootView = styled.View`
     flex-direction: column;
-    gap: 5px;
 `
 
 export const FootName = styled.Text`
