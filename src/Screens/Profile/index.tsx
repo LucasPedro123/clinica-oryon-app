@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { TouchableOpacity, Alert } from 'react-native';
+import { TouchableOpacity, Alert, } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import * as S from './style';
 import { UserContext } from '../../Context/User.context';
-import { StatusBar } from 'expo-status-bar';
 import { BottomTab } from '../../Components/BottomTab';
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { auth } from '../../Services/fireConfig';
+import { StatusBar } from 'expo-status-bar';
 
 const storage = getStorage();
 const db = getFirestore();
@@ -73,13 +73,13 @@ export function Profile({ navigation }: any) {
     }
 
     function handleNavigateForHome() {
-        navigation.navigate('home');
+        navigation.navigate('Home');
     }
 
     return (
         <>
+
             <S.ProfileContainer>
-                <StatusBar style="dark" />
                 <TouchableOpacity onPress={pickImage}>
                     <ProfilePhoto />
                 </TouchableOpacity>
@@ -92,7 +92,6 @@ export function Profile({ navigation }: any) {
                     <S.ProfileExit>Voltar para Home</S.ProfileExit>
                 </TouchableOpacity>
             </S.ProfileContainer>
-            <BottomTab navigation={navigation} />
         </>
     );
 }
