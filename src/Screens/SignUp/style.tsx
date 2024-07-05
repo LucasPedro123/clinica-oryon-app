@@ -141,6 +141,7 @@ export const ButtonText = styled.Text`
 `
 export const DividerView = styled.View`
     flex-direction: row;
+    width: 360px;
     justify-content: space-between;
     align-items: center;
 `

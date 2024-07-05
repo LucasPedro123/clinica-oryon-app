@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { Text, TouchableOpacity, Alert, ScrollView, ActivityIndicator, Dimensions, ScaledSize } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as S from './style';
 import logo from '../../../assets/logoApp.png';
@@ -9,12 +9,13 @@ import GoogleLogo from '../../../assets/GoogleLogo.png';
 import { UserContext } from '../../Context/User.context';
 import { STYLE_GUIDE } from '../../Styles/global';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BottomTab } from '../../Components/BottomTab';
 
 interface AuthState {
     id: string;
     email: string;
     pass: string;
-  }
+}
 
 export default function SignIn({ navigation }: any) {
     const [checkIsVisible, setCheckIsVisible] = useState(false);
@@ -24,32 +25,39 @@ export default function SignIn({ navigation }: any) {
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [loading, setLoading] = useState(false); // Estado para controlar o carregamento
+    const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // Estado para armazenar a altura do dispositivo
     const context = useContext(UserContext);
 
     useEffect(() => {
-        const checkPersistedAuth  = async () => {
+        context?.setNavigation(navigation);
+
+        const checkPersistedAuth = async () => {
             try {
                 const authState = await AsyncStorage.getItem('persistedAuth');
-                
+
                 if (authState) {
                     const jsonValue: AuthState = JSON.parse(authState);
                     signInWithEmailAndPassword(auth, jsonValue.email, jsonValue.pass)
-                    .then((userCredential) => {
-                        const userId = userCredential.user.uid;
-                        context?.setUserId(jsonValue.id);
-                        navigation.navigate('home');
-                    })
-
+                        .then((userCredential) => {
+                            const userId = userCredential.user.uid;
+                            context?.setUserId(jsonValue.id);
+                            navigation.navigate('MainTabs');
+                        });
                 }
             } catch (error) {
                 console.error('Erro ao recuperar o estado de autenticação persistente:', error);
             }
         };
-        
+
         checkPersistedAuth();
     }, []);
-    
-    
+
+    useEffect(() => {
+        setScreenHeight(Dimensions.get('window').height + 30);
+
+
+
+    }, []);
 
     const handleSignIn = () => {
         setLoading(true); // Inicia o carregamento ao iniciar o login
@@ -57,16 +65,15 @@ export default function SignIn({ navigation }: any) {
             .then((userCredential) => {
                 const userId = userCredential.user.uid;
                 context?.setUserId(userId);
-                navigation.navigate('home');
+                navigation.navigate('MainTabs');
 
                 const userInfo = {
                     id: userId,
                     email: email,
                     pass: password
-                }
+                };
 
                 if (checkIsVisible) {
-                    
                     AsyncStorage.setItem('persistedAuth', JSON.stringify(userInfo));
                 }
 
@@ -100,8 +107,8 @@ export default function SignIn({ navigation }: any) {
     };
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <S.ContainerSignIn>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', height: screenHeight }} keyboardShouldPersistTaps="handled">
+            <S.ContainerSignIn >
                 <S.LogoContainer>
                     <S.Logo source={logo} />
                 </S.LogoContainer>
@@ -152,7 +159,6 @@ export default function SignIn({ navigation }: any) {
                                 <S.FormsButtonSpinner>
                                     <ActivityIndicator size="small" color={STYLE_GUIDE.Colors.white} />
                                 </S.FormsButtonSpinner>
-
                             ) : (
                                 <S.FormsButton onPress={handleSignIn}>
                                     <S.ButtonText>Login</S.ButtonText>
@@ -160,13 +166,9 @@ export default function SignIn({ navigation }: any) {
                             )}
                             <S.DividerView>
                                 <S.Divider />
-                                <S.DividerText>Ou com</S.DividerText>
+                                <S.DividerText>Ou</S.DividerText>
                                 <S.Divider />
                             </S.DividerView>
-                            <S.GoogleAuthView>
-                                <S.GoogleAuthLogo source={GoogleLogo} />
-                                <S.GoogleAuthText>Google</S.GoogleAuthText>
-                            </S.GoogleAuthView>
                             <S.SignUpView>
                                 <S.SignUpText>Não tem uma conta?</S.SignUpText>
                                 <TouchableOpacity onPress={handleNavigateForSignUp}>

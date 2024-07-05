@@ -8,18 +8,15 @@ import  Carousel  from '../../Components/Slider';
 import Chart from '../../Components/Chart';
 import MyFoot from '../../Components/MyFoot';
 import { BottomTab } from '../../Components/BottomTab';
-import { STYLE_GUIDE } from '../../Styles/global';
 import * as Animatable from 'react-native-animatable';
 
-interface User {
-    name: string;
-}
+
 
 export default function Home({ navigation }: any) {
     const context = useContext(UserContext);
 
     function handleNavigatorForProfile() {
-        navigation.navigate('profile');
+        navigation.navigate('Profile');
     }
 
     function UserPhoto() {
@@ -42,7 +39,7 @@ export default function Home({ navigation }: any) {
         <>
             <ScrollView>
                 <S.HomeContainer>
-                    <StatusBar barStyle={'light-content'} backgroundColor={'#080A40'} />
+                    <StatusBar barStyle={'light-content'} backgroundColor={'#080A40'}  />
                     <LinearGradient
                         style={{ width: '100%', height: 280 }}
                         colors={['#080A40', '#1A1B52']}
@@ -76,7 +73,6 @@ export default function Home({ navigation }: any) {
                     <MyFoot navigation={navigation} />
                 </S.HomeContainer>
             </ScrollView>
-            <BottomTab navigation={navigation} />
         </>
     );
 }

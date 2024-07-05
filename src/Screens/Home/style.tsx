@@ -5,7 +5,7 @@ import { STYLE_GUIDE } from "../../Styles/global";
 
 export const HomeContainer = styled.View`
     flex: 1;
-    
+    margin-bottom: 70px;
 `
 
 export const ProfileWrapper = styled.View`

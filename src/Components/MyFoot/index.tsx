@@ -36,7 +36,7 @@ const MyFoot = ({ navigation }: any) => {
             const endOfDay = new Date();
             endOfDay.setHours(23, 59, 59, 999);
 
-           
+
 
             try {
                 const q = query(
@@ -71,39 +71,41 @@ const MyFoot = ({ navigation }: any) => {
     };
 
     function handleNavigateForSearch() {
-        navigation.navigate('search');
+        navigation.navigate('Search');
     }
 
     return (
-        <S.FootContainer>
+        <>
             <S.FootContent>
                 <S.MyFootTitle>Meus Alimentos</S.MyFootTitle>
                 <S.TextTotalCalories>{totalCaloriesToday} Kcal</S.TextTotalCalories>
             </S.FootContent>
-            {foodList.length > 0 ? (
-                foodList.map((food, index) => (
-                    <S.MyFoot key={index}>
-                        <S.MyFootWrapper>
-                            <S.MyFootView>
-                                <S.FootName>{food.name}</S.FootName>
-                                <S.FootCalories>{`${food.calories.toFixed(0)} Kcal`}</S.FootCalories>
-                            </S.MyFootView>
-                            <TouchableOpacity onPress={() => handleRemoveFood(food.id)}>
-                                <Feather name="trash-2" size={24} color="black" />
-                            </TouchableOpacity>
-                        </S.MyFootWrapper>
-                    </S.MyFoot>
-                ))
-            ) : (
-                <S.NoFoodMessage>Nenhum alimento adicionado hoje.</S.NoFoodMessage>
-            )}
-            <TouchableOpacity onPress={() => { handleNavigateForSearch(); }}>
-                <S.MyFootButton>
-                    <S.ButtonText>+</S.ButtonText>
-                    <S.ButtonText>Adicionar</S.ButtonText>
-                </S.MyFootButton>
-            </TouchableOpacity>
-        </S.FootContainer>
+            <S.FootContainer>
+                {foodList.length > 0 ? (
+                    foodList.map((food, index) => (
+                        <S.MyFoot key={index}>
+                            <S.MyFootWrapper>
+                                <S.MyFootView>
+                                    <S.FootName>{food.name}</S.FootName>
+                                    <S.FootCalories>{`${food.calories.toFixed(0)} Kcal`}</S.FootCalories>
+                                </S.MyFootView>
+                                <TouchableOpacity onPress={() => handleRemoveFood(food.id)}>
+                                    <Feather name="trash-2" size={24} color="black" />
+                                </TouchableOpacity>
+                            </S.MyFootWrapper>
+                        </S.MyFoot>
+                    ))
+                ) : (
+                    <S.NoFoodMessage>Nenhum alimento adicionado hoje.</S.NoFoodMessage>
+                )}
+                <TouchableOpacity onPress={() => { handleNavigateForSearch(); }}>
+                    <S.MyFootButton>
+                        <S.ButtonText>+</S.ButtonText>
+                        <S.ButtonText>Adicionar</S.ButtonText>
+                    </S.MyFootButton>
+                </TouchableOpacity>
+            </S.FootContainer>
+        </>
     );
 };
 

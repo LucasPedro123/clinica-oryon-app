@@ -4,10 +4,10 @@
     "slug": "clinica-oryon",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon-app.png",
+    "icon": "./assets/logo.png", 
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash.png", 
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,12 +18,12 @@
     "android": {
       "package": "com.lucaspedrof.clinicaoryon",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon-app.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/icon-app.png"
+      "favicon": "./assets/logo.png" 
     },
     "extra": {
       "eas": {

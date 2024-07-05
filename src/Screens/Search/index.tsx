@@ -1,7 +1,7 @@
-import React, { FC, useContext, useRef, useState } from 'react';
-import { ScrollView, ActivityIndicator, TouchableOpacity, Pressable, Text, View } from 'react-native';
+import React, { FC, useContext, useRef, useState, useEffect } from 'react';
+import { ScrollView, ActivityIndicator, TouchableOpacity, Pressable, Text, View, TextInput } from 'react-native';
 import * as S from './style';
-import { AntDesign } from '@expo/vector-icons';
+import { Feather, AntDesign } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { STYLE_GUIDE } from '../../Styles/global';
 import logo from '../../../assets/logoApp.png';
@@ -15,13 +15,20 @@ interface Props {
 
 const Search: React.FC<Props> = ({ navigation }) => {
     const modalizeRef = useRef<Modalize>(null);
+    const inputRef = useRef<TextInput>(null);
     const [selectedFood, setSelectedFood] = useState<any>(null);
-
     const [query, setQuery] = useState<string>('');
     const [results, setResults] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-
     const context = useContext(UserContext);
+
+    useEffect(() => {
+        const focus = navigation.addListener('focus', () => {
+            inputRef.current?.focus();
+        });
+
+        return focus;
+    }, [navigation]);
 
     const searchFood = () => {
         if (!query) return;
@@ -41,7 +48,7 @@ const Search: React.FC<Props> = ({ navigation }) => {
 
     const handleAddFood = (food: any) => {
         context?.setNewFood(food);
-        navigation.navigate('home');
+        navigation.navigate('Home');
     };
 
     const onOpen = (food: any) => {
@@ -53,12 +60,12 @@ const Search: React.FC<Props> = ({ navigation }) => {
         <>
             <ScrollView>
                 <S.SearchContainer>
-                    <StatusBar style='dark' />
                     <S.ImageLogo source={logo} />
                     <S.FormContainer>
                         <S.FormInputContent>
-                            <AntDesign name="search1" size={24} color="black" />
+                            <Feather name="search" size={24} color={STYLE_GUIDE.Colors.primary} />
                             <S.FormInput
+                                ref={inputRef}
                                 placeholder="Pesquisar"
                                 value={query}
                                 onChangeText={setQuery}
@@ -74,7 +81,7 @@ const Search: React.FC<Props> = ({ navigation }) => {
                                 <Pressable key={index} onPress={() => onOpen(item)}>
                                     <S.FootItem>
                                         <S.FootNameWrapper>
-                                            <S.FootTitle>{item.name.substring(0, 22)}</S.FootTitle>
+                                            <S.FootTitle>{item.name.substring(0, 19)}</S.FootTitle>
                                             <S.FootSubTitle>{item.portion.substring(0, 20)}</S.FootSubTitle>
                                         </S.FootNameWrapper>
                                         <S.ButtonAdd>
@@ -98,8 +105,8 @@ const Search: React.FC<Props> = ({ navigation }) => {
                 {selectedFood && (
                     <S.ModalView>
                         <S.ModalWrapper>
-                            <S.ModalTitle >{selectedFood.name}</S.ModalTitle>
-                            <S.ModalPortion >{selectedFood.portion}</S.ModalPortion>
+                            <S.ModalTitle>{selectedFood.name}</S.ModalTitle>
+                            <S.ModalPortion>{selectedFood.portion}</S.ModalPortion>
                             <S.ModalCalories>{selectedFood.calories} kcal</S.ModalCalories>
                         </S.ModalWrapper>
 
@@ -141,7 +148,6 @@ const Search: React.FC<Props> = ({ navigation }) => {
                         </S.ModalContent>
                     </S.ModalView>
                 )}
-
             </Modalize>
         </>
     );

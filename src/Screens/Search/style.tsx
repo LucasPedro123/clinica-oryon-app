@@ -129,6 +129,7 @@ export const ModalCalories = styled.Text`
 export const ModalContent = styled.View`
     flex: 1;
     width: 100%;
+    padding: 0px 04px;
     padding-top: 20px;
 `;
 
