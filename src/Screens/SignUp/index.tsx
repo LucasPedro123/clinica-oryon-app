@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { ScrollView, Text, TouchableOpacity, ActivityIndicator, Alert, Dimensions } from 'react-native';
+import { ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Pressable, View, Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as S from './style';
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { auth } from '../../Services/fireConfig';
-import GoogleLogo from '../../../assets/GoogleLogo.png';
 import logo from '../../../assets/logoApp.png';
 import { UserContext } from '../../Context/User.context';
 import { STYLE_GUIDE } from '../../Styles/global';
@@ -15,23 +15,24 @@ const db = getFirestore();
 export default function SignUp({ navigation }: any) {
     const context = useContext(UserContext);
 
-    const [checkIsVisible, setCheckIsVisible] = useState(false);
     const [passIsVisible, setPassIsVisible] = useState(true);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [photoURL, setPhotoURL] = useState('');
+    const [birthDate, setBirthDate] = useState<Date | null>(null); // State to store birth date
+    const [showDatePicker, setShowDatePicker] = useState(false); // State to control date picker visibility
 
     const [nameError, setNameError] = useState(false);
     const [emailError, setEmailError] = useState(false);
     const [phoneError, setPhoneError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
+    const [birthDateError, setBirthDateError] = useState(false);
     const [generalError, setGeneralError] = useState('');
     const [isLoading, setIsLoading] = useState(false); // State to manage loading state
 
-    const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // Estado para armazenar a altura do dispositivo
-
+    const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // State to store device height
 
     const validateEmail = (email: string) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,13 +49,15 @@ export default function SignUp({ navigation }: any) {
         const isEmailValid = validateEmail(email);
         const isPhoneValid = validatePhone(phone);
         const isPasswordValid = password.trim() !== '';
+        const isBirthDateValid = birthDate !== null; // Check if birth date is selected
 
         setNameError(!isNameValid);
         setEmailError(!isEmailValid);
         setPhoneError(!isPhoneValid);
         setPasswordError(!isPasswordValid);
+        setBirthDateError(!isBirthDateValid);
 
-        if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid) {
+        if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isBirthDateValid) {
             setGeneralError('Por favor, verifique seus dados.');
             return;
         }
@@ -78,29 +81,37 @@ export default function SignUp({ navigation }: any) {
                 email,
                 phone,
                 password,
-                photoURL
+                photoURL,
+                birthDate: birthDate?.toISOString() // Save birth date in Firestore
             });
 
             navigation.navigate('signin');
         } catch (error: any) {
-            if (error.code == 'auth/email-already-in-use') {
+            if (error.code === 'auth/email-already-in-use') {
                 setEmailError(true);
             }
             setGeneralError('Erro ao criar conta. Por favor, tente novamente.');
         } finally {
-            setIsLoading(false); // Stop loading spinner
+            setIsLoading(false);
         }
     };
 
-    function handleNavigateForSignIn() {
+    const handleNavigateForSignIn = () => {
         navigation.navigate('signin');
-    }
+    };
+
+    const handleDateChange = (selectedDate: Date | undefined) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            setBirthDate(selectedDate);
+        }
+    };
 
     useEffect(() => {
-        setScreenHeight(Dimensions.get('window').height + 30);
-
-
-
+        const updateScreenHeight = () => {
+            setScreenHeight(Dimensions.get('window').height + 30);
+        };
+        Dimensions.addEventListener('change', updateScreenHeight);
     }, []);
 
     return (
@@ -121,7 +132,6 @@ export default function SignUp({ navigation }: any) {
                                 placeholder="Por favor, insira seu nome."
                                 value={name}
                                 onChangeText={setName}
-                                
                                 style={{ borderColor: nameError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
                             />
                         </S.InputWrapper>
@@ -144,6 +154,25 @@ export default function SignUp({ navigation }: any) {
                                 value={email}
                                 onChangeText={setEmail}
                                 style={{ borderColor: emailError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
+                            />
+                        </S.InputWrapper>
+                        <S.InputWrapper>
+                            <S.InputName>Data de Nascimento</S.InputName>
+                            <Pressable onPress={() => setShowDatePicker(true)}>
+                                <S.Input
+                                    placeholder="Selecione sua data de nascimento"
+                                    value={birthDate ? birthDate.toLocaleDateString() : ''}
+                                    editable={false}
+                                    style={{ borderColor: birthDateError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor, color: birthDate ? 'black' : '#9e9e9e' }}
+                                />
+                            </Pressable>
+                            <DateTimePickerModal
+                                isVisible={showDatePicker}
+                                mode="date"
+                                date={birthDate || new Date()}
+                                onConfirm={handleDateChange}
+                                onCancel={() => setShowDatePicker(false)}
+                                maximumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 12))}
                             />
                         </S.InputWrapper>
                         <S.InputWrapper>
