@@ -1,13 +1,13 @@
-import React, { FC, useContext, useRef, useState, useEffect } from 'react';
-import { ScrollView, ActivityIndicator, TouchableOpacity, Pressable, Text, View, TextInput } from 'react-native';
+import React, { FC, useContext, useRef, useState, useEffect,  } from 'react';
+import { ScrollView, ActivityIndicator, TouchableOpacity, Pressable, Text, View, TextInput, StatusBar } from 'react-native';
 import * as S from './style';
 import { Feather, AntDesign } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
+
 import { STYLE_GUIDE } from '../../Styles/global';
 import logo from '../../../assets/logoApp.png';
 import { UserContext } from '../../Context/User.context';
-import dataFood from '../../../assets/data/foods.data.json';
 import { Modalize } from 'react-native-modalize';
+import { useFoodContext } from '../../Context/Foods.context';
 
 interface Props {
     navigation: any;
@@ -17,10 +17,8 @@ const Search: React.FC<Props> = ({ navigation }) => {
     const modalizeRef = useRef<Modalize>(null);
     const inputRef = useRef<TextInput>(null);
     const [selectedFood, setSelectedFood] = useState<any>(null);
-    const [query, setQuery] = useState<string>('');
-    const [results, setResults] = useState<any[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
     const context = useContext(UserContext);
+    const { foodItems, searchTerm, setSearchTerm } = useFoodContext(); // Usar o contexto de alimentos
 
     useEffect(() => {
         const focus = navigation.addListener('focus', () => {
@@ -29,22 +27,6 @@ const Search: React.FC<Props> = ({ navigation }) => {
 
         return focus;
     }, [navigation]);
-
-    const searchFood = () => {
-        if (!query) return;
-
-        setLoading(true);
-        try {
-            const filteredFoods = dataFood.foodItems.filter((item: any) =>
-                item.name.toLowerCase().includes(query.toLowerCase())
-            );
-            setResults(filteredFoods);
-        } catch (error) {
-            console.error('Error filtering foods:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleAddFood = (food: any) => {
         context?.setNewFood(food);
@@ -58,6 +40,7 @@ const Search: React.FC<Props> = ({ navigation }) => {
 
     return (
         <>
+            
             <ScrollView>
                 <S.SearchContainer>
                     <S.ImageLogo source={logo} />
@@ -67,17 +50,17 @@ const Search: React.FC<Props> = ({ navigation }) => {
                             <S.FormInput
                                 ref={inputRef}
                                 placeholder="Pesquisar"
-                                value={query}
-                                onChangeText={setQuery}
-                                onSubmitEditing={searchFood}
+                                value={searchTerm}
+                                onChangeText={setSearchTerm}
+                                onSubmitEditing={() => {}}
                             />
                         </S.FormInputContent>
                     </S.FormContainer>
-                    {loading ? (
+                    {foodItems.length === 0 ? (
                         <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} style={{ marginTop: 24 }} />
                     ) : (
                         <S.FootItems>
-                            {results.slice(0, 30).map((item, index) => (
+                            {foodItems.slice(0, 30).map((item, index) => (
                                 <Pressable key={index} onPress={() => onOpen(item)}>
                                     <S.FootItem>
                                         <S.FootNameWrapper>
