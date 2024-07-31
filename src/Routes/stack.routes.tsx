@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -10,19 +10,28 @@ import { Profile } from '../Screens/Profile';
 import Search from '../Screens/Search';
 import { ForgotPass } from '../Screens/ForgotPass';
 import { Feather } from '@expo/vector-icons';
-import { StyleSheet, TouchableOpacity, } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { View } from 'react-native-animatable';
 import { FontAwesome } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from '../Services/fireConfig';
+import { UserContext } from '../Context/User.context';
+import { STYLE_GUIDE } from '../Styles/global';
+import { FoodProvider } from '../Context/Foods.context';
+import { AuthState } from '../Interfaces/app.interfaces';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabArry  = [
+const TabArry = [
     { name: 'Home', component: Home, icon: 'home' },
     { name: 'Search', component: SearchStackRoute, icon: 'search' },
     { name: 'Profile', component: Profile, icon: 'user-circle' }
 ];
+
+
 
 function SearchStackRoute({ navigation }: any) {
     return (
@@ -62,10 +71,10 @@ const TabButton = ({ accessibilityState, iconName, onPress }: any) => {
 
     useEffect(() => {
         if (selected) {
-            viewRef.current.animate({0: {scale: 1, }, 1: {scale: 1.3, }})
-         }
+            viewRef.current.animate({ 0: { scale: 1 }, 1: { scale: 1.3 } })
+        }
         else {
-            viewRef.current.animate({0: {scale: 1.3, }, 1: {scale: 1, }})
+            viewRef.current.animate({ 0: { scale: 1.3 }, 1: { scale: 1 } })
         }
     }, [selected])
 
@@ -87,8 +96,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    selected: {
-    },
+    selected: {},
     iconContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -111,8 +119,8 @@ function MainTabs() {
                         left: 16,
                         height: 60,
                         alignSelf: 'center',
-                        borderRadius: 20,
-                        elevation: 5, 
+                        borderRadius: 100,
+                        elevation: 5,
                     },
                     tabBarShowLabel: false,
                 })}
@@ -134,15 +142,54 @@ function MainTabs() {
 }
 
 export default function MainRoutes() {
+    const context = useContext(UserContext);
+    const [isLogged, setIsLogged] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const checkPersistedAuth = async () => {
+            try {
+                const authState = await AsyncStorage.getItem('persistedAuth');
+
+                if (authState) {
+                    const jsonValue: AuthState = JSON.parse(authState);
+                    signInWithEmailAndPassword(auth, jsonValue.email, jsonValue.pass)
+                        .then((userCredential) => {
+                            const userId = userCredential.user.uid;
+                            context?.setUserId(userId);
+                            setIsLogged(true);
+                        })
+                        .catch(error => {
+                            console.error('Erro ao autenticar:', error);
+                        })
+                        .finally(() => {
+                            setIsLoading(false);
+                        });
+                } else {
+                    setIsLoading(false);
+                }
+            } catch (error) {
+                console.error('Erro ao recuperar o estado de autenticação persistente:', error);
+                setIsLoading(false);
+            }
+        };
+
+        checkPersistedAuth();
+    }, []);
+
+    if (isLoading) {
+        return null; // Você pode exibir uma tela de carregamento aqui, se desejar.
+    }
+
     return (
-        <>
+        <FoodProvider>
             <StatusBar style='dark' />
-            <Stack.Navigator initialRouteName='signin'>
+            <Stack.Navigator initialRouteName={isLogged ? 'MainTabs' : 'signin'}>
                 <Stack.Screen name='signin' component={SignIn} options={{ headerShown: false }} />
                 <Stack.Screen name='signup' component={SignUp} options={{ headerShown: false }} />
-                <Stack.Screen name='forgotpass' component={ForgotPass} options={{ headerShown: true, headerTitle: '' }}/>
+                <Stack.Screen name='forgotpass' component={ForgotPass} options={{ headerShown: true, headerTitle: '' }} />
                 <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }} />
             </Stack.Navigator>
-        </>
+        </FoodProvider>
     );
 }
