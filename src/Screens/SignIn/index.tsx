@@ -11,11 +11,6 @@ import { STYLE_GUIDE } from '../../Styles/global';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomTab } from '../../Components/BottomTab';
 
-interface AuthState {
-    id: string;
-    email: string;
-    pass: string;
-}
 
 export default function SignIn({ navigation }: any) {
     const [checkIsVisible, setCheckIsVisible] = useState(false);
@@ -28,29 +23,7 @@ export default function SignIn({ navigation }: any) {
     const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // Estado para armazenar a altura do dispositivo
     const context = useContext(UserContext);
 
-    useEffect(() => {
-        context?.setNavigation(navigation);
-
-        const checkPersistedAuth = async () => {
-            try {
-                const authState = await AsyncStorage.getItem('persistedAuth');
-
-                if (authState) {
-                    const jsonValue: AuthState = JSON.parse(authState);
-                    signInWithEmailAndPassword(auth, jsonValue.email, jsonValue.pass)
-                        .then((userCredential) => {
-                            const userId = userCredential.user.uid;
-                            context?.setUserId(jsonValue.id);
-                            navigation.navigate('MainTabs');
-                        });
-                }
-            } catch (error) {
-                console.error('Erro ao recuperar o estado de autenticação persistente:', error);
-            }
-        };
-
-        checkPersistedAuth();
-    }, []);
+ 
 
     useEffect(() => {
         setScreenHeight(Dimensions.get('window').height + 30);

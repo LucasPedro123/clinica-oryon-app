@@ -3,40 +3,8 @@ import { createContext, useState, ReactNode, useEffect } from "react";
 import { Alert } from 'react-native';
 import { storage } from '../Services/fireConfig';
 import { getDownloadURL, ref } from 'firebase/storage';
+import { IChildren, IUserPros } from '../Interfaces/app.interfaces';
 
-interface IUserPros {
-    UserName: string | undefined;
-    setUserName: (user: string) => void;
-
-    UserEmail: string | undefined;
-    setEmail: (user: string) => void;
-
-    userId: string | null;
-    setUserId: (id: string) => void;
-
-    UserPhone: number | undefined;
-    setUserPhone: (user: number) => void;
-
-    UserPass: string | undefined;
-    setUserPass: (user: string) => void;
-
-    User: any;
-    setUser: (user: any) => void;
-
-    newFood: any[];
-    setNewFood: (foods: any[]) => void;
-    removeFood: (foodId: string) => void;
-
-    errorForm: string;
-    setErrorForm: (error: string) => void;
-
-    userPhoto: string | undefined;
-    setUserPhoto: (photoURL: string) => void;
-}
-
-interface IChildren {
-    children: ReactNode;
-}
 
 const db = getFirestore();
 

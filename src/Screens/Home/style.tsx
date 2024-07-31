@@ -7,6 +7,13 @@ export const HomeContainer = styled.View`
     flex: 1;
     margin-bottom: 70px;
 `
+export const Wrapper = styled.View`
+    z-index: 99;
+    background-color: #f0f0f0;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    margin-top: -20px;
+`
 
 export const ProfileWrapper = styled.View`
     flex-direction: column;
@@ -15,7 +22,9 @@ export const ProfileWrapper = styled.View`
 export const ProfileContent = styled.View`
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     margin: 61px 24px 0px ;
+
 `
 export const ProfileText = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.regular};
@@ -26,10 +35,10 @@ export const ProfileText = styled.Text`
 `
 export const ProfileName = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.bold};
-    font-size: ${STYLE_GUIDE.FontSize.subHead400};
+    font-size: ${STYLE_GUIDE.FontSize.subHead200};
     line-height: 19px;
     letter-spacing: -0.28px;
-    color: #FFFFFF;
+    color: ${STYLE_GUIDE.Colors.white};
 `
 
 export const UserPhoto = styled.View`

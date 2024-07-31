@@ -6,6 +6,7 @@ export const ForgotPassContainer = styled.View`
     flex: 1;
     padding-left: 20px;
     padding-right: 20px;
+    position: relative;
 `
 export const ForgotPassTitle = styled.Text`
 
@@ -55,7 +56,7 @@ export const ForgotPassInput = styled.TextInput`
 `
 
 export const ForgotPassButton = styled.View`
-    margin-top: 50px;
+    margin-top: 80px;
     width: 100%;
     height: 45px;
     background: ${STYLE_GUIDE.Colors.secundary};
@@ -75,4 +76,10 @@ export const ButtonText = styled.Text`
     color: ${STYLE_GUIDE.Colors.white};
 
 
+`
+
+export const ErrorMessage = styled.Text`
+    position: absolute;
+    bottom: -45px;
+    color: ${STYLE_GUIDE.Colors.alert}
 `
