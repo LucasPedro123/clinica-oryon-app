@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { auth, db } from '../../Services/fireConfig';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import * as S from './style';
 import { STYLE_GUIDE } from '../../Styles/global';
+
 
 export function ForgotPass({ navigation }: any) {
     const [email, setEmail] = useState<string>('');
@@ -13,11 +14,12 @@ export function ForgotPass({ navigation }: any) {
     const [loading, setLoading] = useState(false);
 
     const handleResetPassword = async () => {
-        setLoading(true); // Inicia o carregamento
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        const users = querySnapshot.docs.map(doc => doc.data().email);
+        setLoading(true);
         try {
-            if (users.includes(email)) {
+            const q = query(collection(db, 'users'), where('email', '==', email));
+            const querySnapshot = await getDocs(q);
+    
+            if (!querySnapshot.empty) {
                 await sendPasswordResetEmail(auth, email);
                 navigation.navigate('signin');
                 Alert.alert('Sucesso', 'E-mail de redefinição de senha enviado!');
@@ -30,7 +32,7 @@ export function ForgotPass({ navigation }: any) {
             setEmailErrorText('Ocorreu um erro ao enviar o e-mail de redefinição de senha. Por favor, tente novamente.');
             setEmailError(true);
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
