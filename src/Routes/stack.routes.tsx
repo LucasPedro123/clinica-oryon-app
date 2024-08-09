@@ -17,10 +17,13 @@ import { Entypo } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth } from '../Services/fireConfig';
-import { UserContext } from '../Context/User.context';
+import { UserContext, UserContextProvider } from '../Context/User.context';
 import { STYLE_GUIDE } from '../Styles/global';
 import { FoodProvider } from '../Context/Foods.context';
 import { AuthState } from '../Interfaces/app.interfaces';
+import { CardDetails } from '../Components/CardItems/CardDetails';
+import { Dashboard } from '../Screens/Dashboard';
+import { CardAbout } from '../Components/CardItems/CardAbout';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,7 +31,8 @@ const Tab = createBottomTabNavigator();
 const TabArry = [
     { name: 'Home', component: Home, icon: 'home' },
     { name: 'Search', component: SearchStackRoute, icon: 'search' },
-    { name: 'Profile', component: Profile, icon: 'user-circle' }
+    { name: 'Chart', component: Dashboard, icon: 'bar-chart-2' },
+    { name: 'Profile', component: Profile, icon: 'settings' },
 ];
 
 
@@ -182,14 +186,16 @@ export default function MainRoutes() {
     }
 
     return (
-        <FoodProvider>
+        <>
             <StatusBar style='dark' />
             <Stack.Navigator initialRouteName={isLogged ? 'MainTabs' : 'signin'}>
                 <Stack.Screen name='signin' component={SignIn} options={{ headerShown: false }} />
                 <Stack.Screen name='signup' component={SignUp} options={{ headerShown: false }} />
                 <Stack.Screen name='forgotpass' component={ForgotPass} options={{ headerShown: true, headerTitle: '' }} />
                 <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }} />
+                <Stack.Screen name='CardDetails' component={CardDetails} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
+                <Stack.Screen name='CardAbout' component={CardAbout} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
             </Stack.Navigator>
-        </FoodProvider>
+        </>
     );
 }
