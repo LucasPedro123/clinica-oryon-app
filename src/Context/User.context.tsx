@@ -1,10 +1,9 @@
-import { getFirestore, collection, getDocs, doc, setDoc, Timestamp, deleteDoc } from 'firebase/firestore';
-import { createContext, useState, ReactNode, useEffect } from "react";
+import { getFirestore, collection, getDocs, query, where, deleteDoc, doc, Timestamp, setDoc } from 'firebase/firestore';
+import { createContext, useState, useEffect } from "react";
 import { Alert } from 'react-native';
 import { storage } from '../Services/fireConfig';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { IChildren, IUserPros } from '../Interfaces/app.interfaces';
-
 
 const db = getFirestore();
 
@@ -14,7 +13,7 @@ export function UserContextProvider({ children }: IChildren) {
     const [UserName, setUserName] = useState<string>();
     const [UserEmail, setEmail] = useState<string | undefined>();
     const [userId, setUserId] = useState<string | null>(null);
-    const [UserPhone, setUserPhone] = useState<number>();
+    const [UserPhone, setUserPhone] = useState<number | undefined>();
     const [UserPass, setUserPass] = useState<string | undefined>();
     const [User, setUser] = useState<any>();
     const [errorForm, setErrorForm] = useState<any>();
@@ -23,39 +22,46 @@ export function UserContextProvider({ children }: IChildren) {
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!userId) return;
+
             try {
-                const querySnapshot = await getDocs(collection(db, 'users'));
-                const users = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    userId: doc.data().userId
-                }));
+                // Consulta filtrada para encontrar o documento correspondente ao `userId` autenticado
+                const q = query(collection(db, 'users'), where('userId', '==', userId));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0];
+                    const userData = userDoc.data();
+                    setUser({
+                        id: userDoc.id,
+                        userId: userData.userId,
+                        name: userData.name,
+                        email: userData.email,
+                        phone: userData.phone,
+                        password: userData.password,
+                        photoURL: userData.photoURL,
+                        birthDate: userData.birthDate,
+                    });
 
-                const user = users.find(e => e.userId === userId);
-                if (user) {
-                    setUser(user);
-
-                    const storageRef = ref(storage, `profile_pictures/${userId}.jpg`);
+                    // Buscar URL da foto de perfil
+                    const storageRef = ref(storage, `profile_pictures/${userData.userId}.jpg`);
                     const url = await getDownloadURL(storageRef);
-
                     setUserPhoto(url);
                 } else {
                     Alert.alert('Usuário não encontrado', 'Não foi possível encontrar o usuário.');
                 }
             } catch (error: any) {
-                console.log('Usuário não encontrado ou foto não encontrada: ', error.message)
+                console.log('Erro ao buscar usuário ou foto:', error.message);
             }
         };
 
-        if (userId) {
-            fetchData();
-        }
+        fetchData();
     }, [userId]);
 
     const addNewFood = async (food: any) => {
         setNewFood(prevFoods => {
             const updatedFoods = [...prevFoods, food];
-    
+
             if (userId) {
                 try {
                     const foodDoc = doc(collection(db, 'users', userId, 'foods'));
@@ -64,7 +70,7 @@ export function UserContextProvider({ children }: IChildren) {
                     Alert.alert('Erro ao salvar alimento', error.message);
                 }
             }
-    
+
             return updatedFoods;
         });
     };
@@ -86,5 +92,5 @@ export function UserContextProvider({ children }: IChildren) {
         <UserContext.Provider value={{ setUserName, UserName, setEmail, UserEmail, userId, setUserId, UserPhone, setUserPhone, UserPass, setUserPass, User, setUser, newFood, setNewFood: addNewFood, removeFood, errorForm, setErrorForm, userPhoto, setUserPhoto }}>
             {children}
         </UserContext.Provider>
-    )
+    );
 }

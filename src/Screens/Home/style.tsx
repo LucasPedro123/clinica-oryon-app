@@ -35,7 +35,7 @@ export const ProfileText = styled.Text`
 `
 export const ProfileName = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.bold};
-    font-size: ${STYLE_GUIDE.FontSize.subHead200};
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
     line-height: 19px;
     letter-spacing: -0.28px;
     color: ${STYLE_GUIDE.Colors.white};

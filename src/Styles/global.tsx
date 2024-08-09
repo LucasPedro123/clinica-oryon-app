@@ -5,6 +5,7 @@ export const STYLE_GUIDE = {
         primary: "#080A40",
         secundary: "#836BA9",
         highlight: "#1E2A7D",
+        title: "#374151",
         complement: "background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #FFFFFF",
         neutral: "#CCCCCC",
         borderColor: "#C6C6C6",
