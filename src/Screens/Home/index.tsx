@@ -4,11 +4,11 @@ import * as S from './style';
 import { UserContext } from '../../Context/User.context';
 import Feather from '@expo/vector-icons/Feather';
 import { LinearGradient } from 'expo-linear-gradient';
-import  Carousel  from '../../Components/Slider';
+import Carousel from '../../Components/Slider';
 import Chart from '../../Components/Chart';
 import MyFoot from '../../Components/MyFoot';
-import { BottomTab } from '../../Components/BottomTab';
 import * as Animatable from 'react-native-animatable';
+import { Card } from '../../Components/CardItems';
 
 
 
@@ -39,7 +39,7 @@ export default function Home({ navigation }: any) {
         <>
             <ScrollView>
                 <S.HomeContainer>
-                    <StatusBar barStyle={'light-content'} backgroundColor={'#080A40'}  />
+                    <StatusBar barStyle={'light-content'} backgroundColor={'#080A40'} />
                     <LinearGradient
                         style={{ width: '100%', height: 280 }}
                         colors={['#080A40', '#1A1B52']}
@@ -68,9 +68,11 @@ export default function Home({ navigation }: any) {
                             </TouchableOpacity>
                         </S.ProfileContent>
                     </LinearGradient>
-                    <Carousel />
-                    <Chart />
-                    <MyFoot navigation={navigation} />
+                    <S.Wrapper>
+                        <Carousel />
+                        <Card/>
+                        <MyFoot navigation={navigation} />
+                    </S.Wrapper>
                 </S.HomeContainer>
             </ScrollView>
         </>
