@@ -54,3 +54,16 @@ export interface IUserPros {
 export interface IChildren {
     children: ReactNode;
 }
+
+export interface Notification {
+    id: string;
+    title: string;
+    content: string;
+    date: string;
+    author: string;
+}
+  
+export interface NotificationContextType {
+    notifications: Notification[];
+    loading: boolean;
+  }
