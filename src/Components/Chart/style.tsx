@@ -3,25 +3,35 @@ import { STYLE_GUIDE } from "../../Styles/global";
 
 export const ChartContainer = styled.View`
     flex: 1;
-    justify-content: center;
-    align-items: center;
-    margin-top: 75px;
+    margin-top: -188px;
 `;
 
+export const NumberTitle = styled.Text`
+    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
+    font-size: 40px;
+    line-height: 47px;
+    margin: 28px 0px;
+    color: #242425;
+`
+export const NumberView = styled.View`
+    
+`
+
 export const ChartBorderView = styled.View`
-    border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
     border-radius: 10px;
+    width: 100%;
+    max-width: 370px;
+    align-items: center;
 `;
 export const ChartView = styled.View`
     padding: 20px 20px;
+    height: 300px;
+    width: 100%;
 `
 
 export const ChartContent = styled.View`
     flex-direction: row;
-    justify-content: space-between;
     border-bottom-width: 1px;
-    border-bottom-color: #ECECEC;
-    width: 100vw;
 
     padding: 20px 20px;
 `;
@@ -48,10 +58,8 @@ export const SettingIcon = styled.Pressable`
     align-items: center;
     width: 24px;
     height: 24px;
-    background: #090d53;
+    background: ${STYLE_GUIDE.Colors.primary};
     border-radius: 10px;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-
 `
 
 export const modalContainer = styled.View`
@@ -62,7 +70,7 @@ export const modalContainer = styled.View`
 export const modalContent = styled.View`
     width: 90%;
     padding: 29px;
-    background-color: white;
+    background-color: ${STYLE_GUIDE.Colors.white};
     border-radius: 30px;
     align-items: center;
 `;
@@ -101,4 +109,49 @@ export const modalWrapper = styled.View`
     justify-content: space-between;
     align-items: center;
     margin-bottom: 23px;
+`
+
+export const ChartItems = styled.View`
+    width: 100%;
+    margin-bottom: 130px;
+    padding: 0px 20px;
+
+    display: flex;
+    gap: 20px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+`
+export const ChartItem = styled.View`
+    width: 101px;
+    height: 67px;
+    background: #F9F9F9;
+    shadow-offset: 0.5px 0.5px;
+    shadow-opacity: 0.02;
+    shadow-radius: 15px;
+    elevation: 3;
+    border-radius: 12px;
+
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+`
+
+export const ItemTitle = styled.Text`
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 14px;
+    color: ${STYLE_GUIDE.Colors.gray200};
+`
+export const ItemValue = styled.Text`
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 16px;
+    color: ${STYLE_GUIDE.Colors.black};
+`
+export const NumberDiary = styled.Text`
+    font-weight: 500;
+    font-size: 40px;
+    line-height: 47px;
+    color: #242425;
 `

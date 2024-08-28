@@ -1,127 +1,83 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Alert, View, Text, TextInput, Button, Pressable, ActivityIndicator } from 'react-native';
-import { BarChart } from 'react-native-gifted-charts';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { Alert, View, Text, ActivityIndicator, Pressable } from 'react-native';
 import { STYLE_GUIDE } from '../../Styles/global';
 import * as S from './style';
 import { UserContext } from '../../Context/User.context';
-import { getFirestore, collection, query, where, getDocs, Timestamp, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import Feather from '@expo/vector-icons/Feather';
-// import Modal from 'react-native-modal';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Portal, Dialog, TextInput as PaperTextInput, Button as PaperButton, ActivityIndicator as PaperActivityIndicator } from 'react-native-paper';
+import { Portal, Dialog, Button as PaperButton } from 'react-native-paper';
+import { BarChart } from 'react-native-gifted-charts';
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
+import documentTable from './document/index';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { DataPoint, Food } from '../../Interfaces/app.interfaces';
 
-interface DataPoint {
-    value: number;
-    label: string;
-}
-
-export const Chart = () => {
+const Chart = () => {
     const context = useContext(UserContext);
     const [data, setData] = useState<DataPoint[]>([]);
+    const [dataHtml, setDataHtml] = useState<string>('');
     const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
-    const [foodList, setFoodList] = useState<any[]>([]);
+    const [foodToday, setFoodToday] = useState<number | null>(null);
     const [minCalories, setMinCalories] = useState<number>(0);
     const [maxCalories, setMaxCalories] = useState<number>(2000);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const db = getFirestore();
+    const [loadingData, setLoadingData] = useState<boolean>(true);
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
 
-    const foodsCollectionRef = collection(db, `users/${context?.userId}/foods`);
+    const db = getFirestore();
     const userDocRef = doc(db, `users/${context?.userId}`);
 
+    
+
+    const fetchFoodData = useCallback(async () => {
+        setLoadingData(true);
+        try {
+            const foods = context?.foods || [];
+
+            const caloriesByDay: { [key: number]: number } = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+            foods.forEach((food: Food) => {
+                const foodDate = new Date(food.date);
+                const dayOfWeek = foodDate.getDay();
+                caloriesByDay[dayOfWeek] += food.calories;
+            });
+
+            const chartData = [
+                { day: 'Dom', y: caloriesByDay[0] },
+                { day: 'Seg', y: caloriesByDay[1] },
+                { day: 'Ter', y: caloriesByDay[2] },
+                { day: 'Qua', y: caloriesByDay[3] },
+                { day: 'Qui', y: caloriesByDay[4] },
+                { day: 'Sex', y: caloriesByDay[5] },
+                { day: 'Sab', y: caloriesByDay[6] },
+            ];
+
+            setData(chartData);
+            setFoodToday(caloriesByDay[new Date().getDay()]);
+
+            const totalCalories = chartData.reduce((total, item) => total + item.y, 0).toFixed(2);
+            const document = documentTable(foods, Number(totalCalories), context?.User?.name, context?.User.birthDate);
+            setDataHtml(document);
+        } catch (error) {
+            console.error('Erro ao buscar alimentos do usuário:', error);
+        } finally {
+            setLoadingData(false);
+        }
+    }, [context?.foods, context?.User?.name]);
+
     useEffect(() => {
-        const fetchFoodData = async () => {
-            const today = new Date();
-            const startOfWeek = new Date(today);
-            startOfWeek.setDate(today.getDate() - today.getDay());
-            startOfWeek.setHours(0, 0, 0, 0);
-
-            const endOfWeek = new Date(today);
-            endOfWeek.setDate(today.getDate() + (6 - today.getDay()));
-            endOfWeek.setHours(23, 59, 59, 999);
-
-            try {
-                const foodQuery = query(
-                    foodsCollectionRef,
-                    where('date', '>=', Timestamp.fromDate(startOfWeek)),
-                    where('date', '<=', Timestamp.fromDate(endOfWeek))
-                );
-
-                const querySnapshot = await getDocs(foodQuery);
-                const foods = querySnapshot.docs.map(doc => doc.data());
-                setFoodList(foods);
-
-                const caloriesByDay: { [key: number]: number } = {
-                    0: 0,
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                    4: 0,
-                    5: 0,
-                    6: 0,
-                };
-
-                foods.forEach((food: any) => {
-                    const dayOfWeek = food.date.toDate().getDay();
-                    caloriesByDay[dayOfWeek] += food.calories;
-                });
-
-                const chartData: DataPoint[] = [
-                    { value: caloriesByDay[0], label: 'Dom' },
-                    { value: caloriesByDay[1], label: 'Seg' },
-                    { value: caloriesByDay[2], label: 'Ter' },
-                    { value: caloriesByDay[3], label: 'Qua' },
-                    { value: caloriesByDay[4], label: 'Qui' },
-                    { value: caloriesByDay[5], label: 'Sex' },
-                    { value: caloriesByDay[6], label: 'Sab' },
-                ];
-
-                setData(chartData);
-            } catch (error) {
-                console.error('Erro ao buscar alimentos do usuário:', error);
-                Alert.alert('Erro', 'Ocorreu um erro ao buscar alimentos do usuário.');
-            }
-        };
-
-        const fetchCalorieLimits = async () => {
-            try {
-                const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    setMinCalories(userData.minCalories || 0);
-                    setMaxCalories(userData.maxCalories || 3100);
-                }
-            } catch (error) {
-                console.error('Erro ao buscar limites de calorias:', error);
-                Alert.alert('Erro', 'Ocorreu um erro ao buscar limites de calorias.');
-            }
-        };
-
-        if (context?.userId) {
+        if (context?.foods) {
             fetchFoodData();
-            fetchCalorieLimits();
+            console.log(dataHtml)
         }
-    }, [context?.userId, context?.newFood]);
-
-    useEffect(() => {
-        if (selectedCalories !== null) {
-            setTimeout(() => {
-                setSelectedCalories(null);
-            }, 5000);
-        }
-    }, [selectedCalories, context?.newFood]);
-
-    const totalCalories = data.reduce((total, item) => total + item.value, 0).toFixed(2);
+    }, [context?.foods]);
 
     const saveCalorieLimits = async () => {
         setLoading(true);
-
         try {
-            await setDoc(userDocRef, {
-                minCalories,
-                maxCalories,
-            }, { merge: true });
+            await setDoc(userDocRef, { minCalories, maxCalories }, { merge: true });
             setModalVisible(false);
         } catch (error) {
             console.error('Erro ao salvar limites de calorias:', error);
@@ -131,42 +87,95 @@ export const Chart = () => {
         }
     };
 
+    const totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
+    const averageCalories = data.length > 0 ? (data.reduce((total, item) => total + item.y, 0) / data.length).toFixed(2) : '0.00';
+
+
+    const printToFile = async () => {
+        setIsGeneratingPDF(true);
+        try {
+            const { uri } = await Print.printToFileAsync({ html: dataHtml });
+            await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+        } catch (error) {
+            console.error('Erro ao gerar o PDF:', error);
+        } finally {
+            setIsGeneratingPDF(false);
+        }
+    };
+
+    if (loadingData) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} />
+            </View>
+        );
+    }
+
     return (
         <>
             <S.ChartContainer style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <S.ChartName>Resumo</S.ChartName>
-                <S.ChartBorderView>
-                    <S.ChartContent>
-                        <S.ChartTitle>
-                            {selectedCalories !== null ? `${selectedCalories.toFixed(2)} Kcal` : `${totalCalories} Kcal na semana`}
-                        </S.ChartTitle>
-                        <Pressable>
+                {loading ? (
+                    <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} style={{ marginTop: 24 }} />
+                ) : (
+                    <>
+                        <S.NumberTitle>
+                            {selectedCalories ? `${selectedCalories}` : foodToday != null ? `${foodToday}` : `${0}`}
+                            <Text style={{ fontSize: 16 }}> Kcal</Text>
+                        </S.NumberTitle>
+                        <S.ChartItems>
+                            <S.ChartItem>
+                                <S.ItemTitle>Média</S.ItemTitle>
+                                <S.ItemValue>{averageCalories}</S.ItemValue>
+                            </S.ChartItem>
+                            <S.ChartItem>
+                                <S.ItemTitle>Calorias</S.ItemTitle>
+                                <S.ItemValue>{`${totalCalories}`}</S.ItemValue>
+                            </S.ChartItem>
                             <S.SettingIcon onPress={() => setModalVisible(true)}>
                                 <Ionicons name="settings" size={12} color="#FFF" />
                             </S.SettingIcon>
-                        </Pressable>
-                    </S.ChartContent>
-                    <S.ChartView>
-                        <BarChart
-                            barWidth={22}
-                            noOfSections={4}
-                            barBorderRadius={30}
-                            data={data.map(item => ({
-                                value: item.value || 0,
-                                label: item.label,
-                                frontColor: (item.value < minCalories || item.value > maxCalories) ? '#C2A3D4' : STYLE_GUIDE.Colors.secundary,
-                                onPress: () => setSelectedCalories(item.value),
-                                onPressOut: () => setSelectedCalories(null),
-                            }))}
-                            yAxisThickness={0}
-                            xAxisThickness={0}
-                        />
-                    </S.ChartView>
-                </S.ChartBorderView>
-            </S.ChartContainer>
+                        </S.ChartItems>
+                        <S.ChartBorderView>
+                            <S.ChartView>
+                                <BarChart
+                                    barWidth={22}
+                                    noOfSections={4}
+                                    barBorderRadius={30}
+                                    data={data.map(item => ({
+                                        value: item.y || 0,
+                                        label: item.day,
+                                        frontColor: item.y < minCalories || item.y > maxCalories
+                                            ? STYLE_GUIDE.Colors.alert
+                                            : STYLE_GUIDE.Colors.secundary,
+                                        onPress: () => setSelectedCalories(item.y),
+                                        onPressOut: () => setSelectedCalories(null),
+                                    }))}
+                                    yAxisThickness={0}
+                                    xAxisThickness={0}
+                                    disableScroll
+                                    isAnimated
+                                    animationDuration={1000}
+                                    initialSpacing={10}
+                                />
+                            </S.ChartView>
+                        </S.ChartBorderView>
+                    </>
+                )}
 
-            <Portal >
-        
+                <Pressable onPress={printToFile} >
+                    <View style={{ alignItems: 'center', height: 50 }}>
+                        {isGeneratingPDF ? (
+                            <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.primary} />
+                        ) : (
+                            <>
+                                <AntDesign name="download" size={30} color={STYLE_GUIDE.Colors.primary} />
+                                <Text style={{ color: STYLE_GUIDE.Colors.primary }}>Baixar</Text>
+                            </>
+                        )}
+                    </View>
+                </Pressable>
+            </S.ChartContainer >
+            <Portal>
                 <Dialog visible={modalVisible} onDismiss={() => setModalVisible(false)} style={{ backgroundColor: '#fff' }}>
                     <S.modalTitle>Definir Limites de Calorias</S.modalTitle>
                     <Dialog.Content>

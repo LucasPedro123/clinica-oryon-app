@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import SignIn from '../Screens/SignIn';
 import SignUp from '../Screens/SignUp';
 import Home from '../Screens/Home';
-import { Profile } from '../Screens/Profile';
+import { Settings } from '../Screens/Settings';
 import Search from '../Screens/Search';
 import { ForgotPass } from '../Screens/ForgotPass';
 import { Feather } from '@expo/vector-icons';
@@ -24,6 +24,11 @@ import { AuthState } from '../Interfaces/app.interfaces';
 import { CardDetails } from '../Components/CardItems/CardDetails';
 import { Dashboard } from '../Screens/Dashboard';
 import { CardAbout } from '../Components/CardItems/CardAbout';
+import { ProfileUser } from '../Screens/Settings/Elements/ProfileUser';
+import { SupportCenter } from '../Screens/Settings/Elements/Support';
+import { Notifications } from '../Screens/Settings/Elements/Notification';
+import { NotificationDetails } from '../Screens/Settings/Elements/Notification/NotificationDetails';
+import { ConfigLoginScreen } from '../Screens/Settings/Elements/ConfigLogin';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,7 +37,7 @@ const TabArry = [
     { name: 'Home', component: Home, icon: 'home' },
     { name: 'Search', component: SearchStackRoute, icon: 'search' },
     { name: 'Chart', component: Dashboard, icon: 'bar-chart-2' },
-    { name: 'Profile', component: Profile, icon: 'settings' },
+    { name: 'Settings', component: Settings, icon: 'settings' },
 ];
 
 
@@ -182,7 +187,7 @@ export default function MainRoutes() {
     }, []);
 
     if (isLoading) {
-        return null; // Você pode exibir uma tela de carregamento aqui, se desejar.
+        return null; 
     }
 
     return (
@@ -195,6 +200,14 @@ export default function MainRoutes() {
                 <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }} />
                 <Stack.Screen name='CardDetails' component={CardDetails} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
                 <Stack.Screen name='CardAbout' component={CardAbout} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
+             
+                <Stack.Screen name='ProfileUser' component={ProfileUser} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
+                <Stack.Screen name='SupportCenter' component={SupportCenter} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
+               
+                <Stack.Screen name='Notifications' component={Notifications} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
+                <Stack.Screen name='NotificationDetails' component={NotificationDetails} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
+               
+                <Stack.Screen name='ConfigLogin' component={ConfigLoginScreen} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
             </Stack.Navigator>
         </>
     );

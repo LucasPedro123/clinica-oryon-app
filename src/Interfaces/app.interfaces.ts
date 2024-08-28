@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 
 
 export interface AuthState {
@@ -6,11 +6,19 @@ export interface AuthState {
     email: string;
     pass: string;
 }
+
+export interface FoodChart {
+    day: string;
+    y: number;
+}
 export interface Food {
-    id: number;
+    id: string;
+    _id?: string;
+    firestoreId?: string;
     name: string;
     portion: string;
     calories: number;
+    date: any;
 }
 
 export interface FoodContextType {
@@ -40,8 +48,7 @@ export interface IUserPros {
     User: any;
     setUser: (user: any) => void;
 
-    newFood: any[];
-    setNewFood: (foods: any[]) => void;
+    
     removeFood: (foodId: string) => void;
 
     errorForm: string;
@@ -49,6 +56,11 @@ export interface IUserPros {
 
     userPhoto: string | undefined;
     setUserPhoto: (photoURL: string) => void;
+
+    foods: any;
+    setFoods: Dispatch<SetStateAction<any[]>>;
+
+    fetchUserFoods: () => Promise<void>;
 }
 
 export interface IChildren {
@@ -62,8 +74,34 @@ export interface Notification {
     date: string;
     author: string;
 }
-  
+
 export interface NotificationContextType {
     notifications: Notification[];
     loading: boolean;
-  }
+}
+
+export interface MyDocumentProps {
+    data: DataPoint[];
+    totalCalories: string;
+}
+
+export interface DataPoint extends Record<string, unknown> {
+    day: string;
+    y: number;
+}
+export interface CaloriesByDay {
+    foods: Food[];
+    totalCalories: number;
+}
+
+export interface User {
+    id: string;
+    userId: string,
+    firestoreId: string,
+    name: string,
+    email: string,
+    phone: string,
+    password: string,
+    photoURL: string,
+    birthDate: any,
+}
