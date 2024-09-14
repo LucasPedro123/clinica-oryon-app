@@ -1,10 +1,11 @@
-import { getFirestore, collection, getDocs, query, where, Timestamp, setDoc, doc, deleteDoc } from 'firebase/firestore';
 import { createContext, useState, useEffect, useContext, useCallback, useMemo } from "react";
-import { Alert } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFoods, addFood, removeFood as removeFoodAction } from '../slices/foodsSlice';
+import { getFirestore, collection, getDocs, query, where, Timestamp, setDoc, doc, deleteDoc } from 'firebase/firestore';
 import { storage } from '../Services/fireConfig';
 import { getDownloadURL, ref } from 'firebase/storage';
-import { IChildren, IUserPros, User } from '../Interfaces/app.interfaces';
-import { useFoodContext } from './Foods.context';
+import { Food, IChildren, IUserPros, User } from '../Interfaces/app.interfaces';
+import { RootState, AppDispatch } from '../store';
 
 const db = getFirestore();
 
@@ -19,10 +20,10 @@ export function UserContextProvider({ children }: IChildren) {
     const [User, setUser] = useState<User>();
     const [errorForm, setErrorForm] = useState<any>();
     const [userPhoto, setUserPhoto] = useState<string>();
-    const [foods, setFoods] = useState<any[]>([]); // Inicializa com array vazio
-    
+    const dispatch = useDispatch<AppDispatch>();
+    const foods = useSelector((state: RootState) => state.foods.list);
+    const [totalCaloriesDay, setTotalCaloriesDay] = useState<number>(0);
 
-    const { setSearchTerm } = useFoodContext();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,11 +35,12 @@ export function UserContextProvider({ children }: IChildren) {
 
                 if (!querySnapshot.empty) {
                     const userDoc = querySnapshot.docs[0];
-                    const userData = userDoc.data();
+                    const userData = userDoc.data() as User;
                     setUser({
                         id: userDoc.id,
                         userId: userData.userId,
                         name: userData.name,
+                        surname: userData.surname,
                         email: userData.email,
                         phone: userData.phone,
                         firestoreId: userData.firestoreId,
@@ -87,52 +89,49 @@ export function UserContextProvider({ children }: IChildren) {
                 ...doc.data(),
                 id: doc.id,
                 date: doc.data().date.toDate(),
-            }));
+            } as Food));
 
-
-            setFoods(fetchedFoods);
-            console.log('Foods fetched:', fetchedFoods);
+            dispatch(setFoods(fetchedFoods));
 
         } catch (error) {
             console.error('Erro ao buscar alimentos do usuário:', error);
         }
-    }, [userId]);
+    }, [userId, dispatch]);
 
-    const addNewFood = useCallback(async (food: any) => {
-        setSearchTerm('');
-        const newFood = { ...food, date: Timestamp.now() };
+    const addNewFood = useCallback(async (food: Food) => {
+        const newFood = { ...food, date: Timestamp.now().toDate() };
+        
     
         if (userId) {
             try {
                 const foodDocRef = doc(collection(db, 'users', userId, 'foods'));
                 const foodWithId = { ...newFood, firestoreId: foodDocRef.id };
-                await setDoc(foodDocRef, foodWithId); // Salva o alimento primeiro
-                // Atualiza o estado local com o novo alimento
-                setFoods(prevFoods => [...prevFoods, foodWithId]);
+                await setDoc(foodDocRef, foodWithId); 
+                dispatch(addFood(foodWithId));
             } catch (error: any) {
-                Alert.alert('Erro ao salvar alimento', error.message);
+                console.log('Erro ao salvar alimento', error.message);
             }
         }
-    }, [userId, foods]);
+    }, [userId, dispatch]);
     
 
-    const removeFood = useCallback(async (foodId: string) => {
-        setFoods(prevFoods => prevFoods.filter(food => food.foodId !== foodId));
-
-        if (userId) {
+    const removeFood = useCallback(async (foodRemove: Food) => {
+        
+        if (userId && foodRemove.firestoreId && foodRemove._id) {
+            dispatch(removeFoodAction(foodRemove.firestoreId));
             try {
-                const foodDocRef = doc(db, 'users', userId, 'foods', foodId);
+                const foodDocRef = doc(db, 'users', userId, 'foods', foodRemove.firestoreId);
                 await deleteDoc(foodDocRef);
             } catch (error: any) {
-                Alert.alert('Erro ao excluir alimento', error.message);
+                console.log('Erro ao excluir alimento', error.message);
             }
         }
-    }, [userId]);
+    }, [userId, dispatch]);
 
     const contextValue = useMemo(() => ({
         setUserName, UserName, setEmail, UserEmail, userId, setUserId, UserPhone, setUserPhone, 
         UserPass, setUserPass, User, setUser,  setNewFood: addNewFood, removeFood, 
-        errorForm, setErrorForm, userPhoto, setUserPhoto, foods, setFoods, fetchUserFoods
+        errorForm, setErrorForm, userPhoto, setUserPhoto, foods, setFoods, fetchUserFoods, totalCaloriesDay, setTotalCaloriesDay
     }), [UserName, UserEmail, userId, UserPhone, UserPass, User,  userPhoto, foods]);
 
     return (

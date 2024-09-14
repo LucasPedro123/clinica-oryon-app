@@ -4,6 +4,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Routes from './src/Routes';
 import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications'
+import { Provider } from 'react-redux';
+import store from './src/store';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -14,7 +16,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
-  
+
 
   useEffect(() => {
     const loadFont = async () => {
@@ -30,7 +32,9 @@ export default function App() {
 
   return (
     <GestureHandlerRootView>
-      <Routes />
+      <Provider store={store}>
+        <Routes />
+      </Provider>
     </GestureHandlerRootView>
   );
 }

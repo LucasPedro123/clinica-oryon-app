@@ -2,8 +2,9 @@ import styled from "styled-components/native";
 import { STYLE_GUIDE } from "../../Styles/global";
 
 export const ChartContainer = styled.View`
-    flex: 1;
-    margin-top: -188px;
+    width: 100%;
+    height: 100%;
+    position: relative;
 `;
 
 export const NumberTitle = styled.Text`
@@ -11,10 +12,13 @@ export const NumberTitle = styled.Text`
     font-size: 40px;
     line-height: 47px;
     margin: 28px 0px;
-    color: #242425;
+    color: ${STYLE_GUIDE.Colors.primary};
 `
 export const NumberView = styled.View`
     
+`
+
+export const ButtonPDF = styled.Pressable`
 `
 
 export const ChartBorderView = styled.View`

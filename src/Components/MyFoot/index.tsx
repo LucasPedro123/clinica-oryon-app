@@ -1,27 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Alert, TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity, View } from 'react-native';
 import * as S from './style';
 import Feather from '@expo/vector-icons/Feather';
 import { UserContext } from '../../Context/User.context';
 import { getFirestore, collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import { STYLE_GUIDE } from '../../Styles/global';
 import { AntDesign } from '@expo/vector-icons';
+import { Food } from '../../Interfaces/app.interfaces';
 
-interface IFood {
-    name: string;
-    calories: number;
-    id: string;
-    date: Timestamp;
-    firestoreId: string;
-}
+
 
 const MyFoot = ({ navigation }: any) => {
     const context = useContext(UserContext);
-    const db = getFirestore();
 
-    const handleRemoveFood = async (foods: IFood) => {
-        await context?.removeFood(foods.firestoreId);
-        context?.setFoods(prevFoods => prevFoods.filter(food => food.firestoreId !== foods.firestoreId));
+    const handleRemoveFood = async (foods: Food) => {
+        context?.removeFood(foods);
     };
 
     const handleNavigateForSearch = () => {
@@ -35,7 +28,7 @@ const MyFoot = ({ navigation }: any) => {
             date.getFullYear() === today.getFullYear();
     };
 
-    const todayFoods = context?.foods.filter((food: IFood) => {
+    const todayFoods = context?.foods.filter((food: Food) => {
         if (food.date) {
             const foodDate = food.date instanceof Date ? food.date : food.date.toDate();
             return isToday(foodDate);
@@ -43,10 +36,11 @@ const MyFoot = ({ navigation }: any) => {
         return false;
     });
 
-    const totalCaloriesToday = todayFoods.reduce((total: number, food: IFood) => total + food.calories, 0).toFixed(2);
+    const totalCaloriesToday = todayFoods.reduce((total: number, food: Food) => total + food.calories, 0).toFixed(0);
+    context?.setTotalCaloriesDay(totalCaloriesToday)
 
     return (
-        <>
+        <View>
             <S.ButtonWrapper>
                 <S.Button onPress={handleNavigateForSearch}>
                     <AntDesign name="pluscircle" size={31} color={STYLE_GUIDE.Colors.secundary} />
@@ -58,7 +52,7 @@ const MyFoot = ({ navigation }: any) => {
             </S.FootContent>
             <S.FootContainer>
                 {todayFoods.length > 0 ? (
-                    todayFoods.map((food: IFood, index: number) => (
+                    todayFoods.map((food: Food, index: number) => (
                         <S.MyFoot key={index}>
                             <S.MyFootWrapper>
                                 <S.MyFootView>
@@ -75,7 +69,7 @@ const MyFoot = ({ navigation }: any) => {
                     <S.NoFoodMessage>Nenhum alimento adicionado hoje.</S.NoFoodMessage>
                 )}
             </S.FootContainer>
-        </>
+        </View>
     );
 };
 
