@@ -1,6 +1,7 @@
 import { Food } from "../../../Interfaces/app.interfaces";
 
 function documentTable(foodsData: Food[], totalCalories: number, username: string, birthDateISO: string) {
+    let foods = foodsData;
 
     const age = calculateAge(birthDateISO);
 
@@ -82,7 +83,7 @@ function documentTable(foodsData: Food[], totalCalories: number, username: strin
                 </tr>
             </thead>
             <tbody>
-                ${generateTableRows(foodsData)}
+                ${generateTableRows(foods)}
             </tbody>
             <tfoot>
                 <tr>
