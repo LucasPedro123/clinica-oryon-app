@@ -45,11 +45,11 @@ export interface IUserPros {
     UserPass: string | undefined;
     setUserPass: (user: string) => void;
 
-    User: any;
+    User: User;
     setUser: (user: any) => void;
 
     
-    removeFood: (foodId: string) => void;
+    removeFood: (foodRemove: Food) => void;
 
     errorForm: string;
     setErrorForm: (error: string) => void;
@@ -61,6 +61,11 @@ export interface IUserPros {
     setFoods: Dispatch<SetStateAction<any[]>>;
 
     fetchUserFoods: () => Promise<void>;
+
+    totalCaloriesDay: number;
+    setTotalCaloriesDay: (caloriesDayValue: number) => void;
+
+    setNewFood: (food: any) => void;
 }
 
 export interface IChildren {
@@ -99,6 +104,7 @@ export interface User {
     userId: string,
     firestoreId: string,
     name: string,
+    surname: string,
     email: string,
     phone: string,
     password: string,
