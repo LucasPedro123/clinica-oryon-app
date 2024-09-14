@@ -16,6 +16,13 @@ export const Title = styled.Text`
     color: ${STYLE_GUIDE.Colors.primary};
     margin-bottom: 36px;
 `
+export const Wrapper = styled.View`
+    gap: 16px;
+`
+export const ContentLinks = styled.View`
+    flex-direction: row;
+    gap: 27px;
+`
 
 export const NotificationTitle = styled.Text`
     width: 320px;

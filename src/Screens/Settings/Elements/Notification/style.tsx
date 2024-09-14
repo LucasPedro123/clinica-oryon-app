@@ -62,3 +62,13 @@ export const NotificationContent = styled.Text`
     line-height: 20px; 
     color: ${STYLE_GUIDE.Colors.gray100};
 `
+
+export const BallRed = styled.View`
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: -02;
+    top: -02;
+    background-color: ${STYLE_GUIDE.Colors.alert};
+    border-radius: 100px;
+`
