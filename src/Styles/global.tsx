@@ -17,7 +17,8 @@ export const STYLE_GUIDE = {
         black: "#000000",
         white: "#FFFFFF",
         label: "#999EA1",
-        backgroundColor: "linear-gradient(240.86deg, #080A40 0%, #1A1B52 100%)"
+        backgroundColor: "linear-gradient(240.86deg, #080A40 0%, #1A1B52 100%)",
+        backgroundApp: "#f0f0f0"
     },
     BlueGradient: {
         blue100: "#080A40",
