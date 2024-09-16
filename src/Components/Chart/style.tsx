@@ -2,10 +2,20 @@ import styled from "styled-components/native";
 import { STYLE_GUIDE } from "../../Styles/global";
 
 export const ChartContainer = styled.View`
+    flex: 1;
     width: 100%;
     height: 100%;
     position: relative;
 `;
+
+export const Title = styled.Text`
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 15px;
+    color: ${STYLE_GUIDE.Colors.gray100};
+    align-self: center;
+    margin-top: 63px;
+`
 
 export const NumberTitle = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
@@ -13,12 +23,6 @@ export const NumberTitle = styled.Text`
     line-height: 47px;
     margin: 28px 0px;
     color: ${STYLE_GUIDE.Colors.primary};
-`
-export const NumberView = styled.View`
-    
-`
-
-export const ButtonPDF = styled.Pressable`
 `
 
 export const ChartBorderView = styled.View`
@@ -31,6 +35,7 @@ export const ChartView = styled.View`
     padding: 20px 20px;
     height: 300px;
     width: 100%;
+    max-width: 800px;
 `
 
 export const ChartContent = styled.View`
@@ -158,4 +163,9 @@ export const NumberDiary = styled.Text`
     font-size: 40px;
     line-height: 47px;
     color: #242425;
+`
+
+export const Button = styled.View`
+    align-items: center;
+    height: 250px;margin-bottom: -30px;
 `
