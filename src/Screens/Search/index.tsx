@@ -8,6 +8,7 @@ import logo from '../../../assets/logoApp.png';
 import { UserContext } from '../../Context/User.context';
 import { Modalize } from 'react-native-modalize';
 import { useFoodContext } from '../../Context/Foods.context';
+import {  Timestamp} from 'firebase/firestore';
 
 interface Props {
     navigation: any;
@@ -30,7 +31,10 @@ const Search: React.FC<Props> = ({ navigation }) => {
 
     const handleAddFood = (food: any) => {
         context?.setNewFood(food);
+        const newFood = { ...food, date: Timestamp.now() };
+        context?.setFoods(prevFoods => [...prevFoods, newFood]);
         navigation.navigate('Home');
+        setSearchTerm('')
     };
 
     const onOpen = (food: any) => {
