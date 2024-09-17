@@ -20,7 +20,8 @@ export const SettingsCards = styled.View`
     gap: 30px;
 `
 export const SettingsCard = styled.View`
-    width: 85%;
+    width: 100%;
+    padding: 0px 30px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -66,4 +67,14 @@ export const Text = styled.Text`
     font-size: 18px;
     line-height: 21px;
     color: ${STYLE_GUIDE.Colors.primary};
+`
+export const CircleNotifications = styled.View`
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: ${STYLE_GUIDE.Colors.alert};
+    right: 0;
+    top: 0;
+    border-radius: 100px;
+    z-index: 2;
 `
