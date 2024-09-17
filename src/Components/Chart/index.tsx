@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Alert, View, Text, ActivityIndicator, Pressable } from 'react-native';
+import { Alert, View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { STYLE_GUIDE } from '../../Styles/global';
 import * as S from './style';
 import { UserContext } from '../../Context/User.context';
@@ -8,11 +8,14 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Portal, Dialog, Button as PaperButton } from 'react-native-paper';
 import { BarChart } from 'react-native-gifted-charts';
 import { DataPoint, Food } from '../../Interfaces/app.interfaces';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import documentTable from './document';
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
 
 const Chart = () => {
     const context = useContext(UserContext);
     const [data, setData] = useState<DataPoint[]>([]);
-    const [dataHtml, setDataHtml] = useState<string>('');
     const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
     const [foodToday, setFoodToday] = useState<number | null>(null);
     const [minCalories, setMinCalories] = useState<number>(0);
@@ -21,28 +24,25 @@ const Chart = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingData, setLoadingData] = useState<boolean>(true);
 
-    const totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
-    const averageCalories = data.length > 0 ? (data.reduce((total, item) => total + item.y, 0) / data.length).toFixed(2) : '0.00';
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
+    const [dataHtml, setDataHtml] = useState<string>('');
 
+    let totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
+    const averageCalories = data.length > 0 ? (data.reduce((total, item) => total + item.y, 0) / data.length).toFixed(2) : '0.00';
 
     const db = getFirestore();
     const userDocRef = doc(db, `users/${context?.userId}`);
-
-
 
     const fetchFoodData = useCallback(async () => {
         setLoadingData(true);
         try {
             const foods = context?.foods || [];
-
             const caloriesByDay: { [key: number]: number } = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
             foods.forEach((food: Food) => {
                 const foodTimestamp = food.date;
                 if (foodTimestamp && foodTimestamp.seconds !== undefined && foodTimestamp.nanoseconds !== undefined) {
                     const foodDate = new Date(foodTimestamp.seconds * 1000 + foodTimestamp.nanoseconds / 1000000);
-
                     const dayOfWeek = foodDate.getDay();
-
                     caloriesByDay[dayOfWeek] += food.calories;
                 } else {
                     const foodDate = new Date(food.date);
@@ -61,20 +61,23 @@ const Chart = () => {
                 { day: 'Sab', y: caloriesByDay[6] },
             ];
 
-
             setData(chartData);
             setFoodToday(caloriesByDay[new Date().getDay()]);
-
         } catch (error) {
             console.error('Erro ao buscar alimentos do usuário:', error);
         } finally {
             setLoadingData(false);
         }
-    }, [context?.foods, context?.userId, context?.setNewFood]);
+    }, [context?.foods, context?.userId]);
 
     useEffect(() => {
         fetchFoodData();
+        if (context?.foods?.length > 0 && context?.User) {
+            totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
 
+            let html = documentTable(context.foods, Number(totalCalories), context.User.name, context.User.birthDate);
+            setDataHtml(html)
+        }
     }, [context?.foods, context?.userId]);
 
     useEffect(() => {
@@ -83,7 +86,7 @@ const Chart = () => {
                 setSelectedCalories(null);
             }, 5000);
         }
-    }, [selectedCalories, context?.foods]);
+    }, [selectedCalories]);
 
     const saveCalorieLimits = async () => {
         setLoading(true);
@@ -98,8 +101,6 @@ const Chart = () => {
         }
     };
 
-    
-
     if (loadingData) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -108,8 +109,27 @@ const Chart = () => {
         );
     }
 
+
+
+    const printToFile = async () => {
+        setIsGeneratingPDF(true);
+        try {
+            const { uri } = await Print.printToFileAsync({ html: dataHtml });
+            await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+        } catch (error) {
+            console.error('Erro ao gerar o PDF:', error);
+        } finally {
+            setIsGeneratingPDF(false);
+        }
+    };
+
+    if (!context?.foods || !context?.User) {
+        return <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} />;
+    }
+
     return (
-        <>
+        <View style={{ flexGrow: 1 }}>
+            <S.Title>Gráfico</S.Title>
             <S.ChartContainer style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 {loading ? (
                     <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} style={{ marginTop: 24 }} />
@@ -134,32 +154,44 @@ const Chart = () => {
                         </S.ChartItems>
                         <S.ChartBorderView>
                             <S.ChartView>
-                                <BarChart
-                                    barWidth={22}
-                                    noOfSections={4}
-                                    barBorderRadius={30}
-                                    data={data.map(item => ({
-                                        value: item.y || 0,
-                                        label: item.day,
-                                        frontColor: item.y < minCalories || item.y > maxCalories
-                                            ? STYLE_GUIDE.Colors.alert
-                                            : STYLE_GUIDE.Colors.secundary,
-                                        onPress: () => setSelectedCalories(item.y),
-                                        onPressOut: () => setSelectedCalories(null),
-                                    }))}
-                                    yAxisThickness={0}
-                                    xAxisThickness={0}
-                                    disableScroll
-                                    isAnimated
-                                    animationDuration={1000}
-                                    initialSpacing={10}
-                                />
+                                <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                                    <BarChart
+                                        barWidth={22}
+                                        noOfSections={4}
+                                        barBorderRadius={30}
+                                        data={data.map(item => ({
+                                            value: item.y || 0,
+                                            label: item.day,
+                                            frontColor: item.y < minCalories || item.y > maxCalories
+                                                ? STYLE_GUIDE.Colors.alert
+                                                : STYLE_GUIDE.Colors.secundary,
+                                            onPress: () => setSelectedCalories(item.y),
+                                        }))}
+                                        yAxisThickness={0}
+                                        xAxisThickness={0}
+                                        disableScroll
+                                        animationDuration={1000}
+                                        initialSpacing={10}
+                                    />
+                                </View>
                             </S.ChartView>
                         </S.ChartBorderView>
                     </>
                 )}
+            </S.ChartContainer>
 
-            </S.ChartContainer >
+            <Pressable onPress={printToFile}>
+                <S.Button>
+                    {isGeneratingPDF ? (
+                        <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} />
+                    ) : (
+                        <>
+                            <AntDesign name="download" size={30} color={STYLE_GUIDE.Colors.primary} />
+                            <Text style={{ color: STYLE_GUIDE.Colors.primary }}>Baixar</Text>
+                        </>
+                    )}
+                </S.Button>
+            </Pressable>
             <Portal>
                 <Dialog visible={modalVisible} onDismiss={() => setModalVisible(false)} style={{ backgroundColor: '#fff' }}>
                     <S.modalTitle>Definir Limites de Calorias</S.modalTitle>
@@ -184,7 +216,7 @@ const Chart = () => {
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
-        </>
+        </View>
     );
 };
 
