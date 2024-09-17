@@ -5,7 +5,7 @@ export const Container = styled.View`
     flex: 1;
 
     align-items: center;
-    margin-top: 144px;
+    margin-top: 110px;
 `
 
 
@@ -83,8 +83,11 @@ export const ProfileView = styled.View`
 export const ProfileWrapper = styled.View`
     gap: 17px;
 `
-export const ProfileInfoView = styled.View`
-margin-top: 16px;
+export const ProfileInfoView = styled.Pressable`
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 16px;
     width: 310px;
     background: ${STYLE_GUIDE.Colors.white};
     border-radius: 10px;
