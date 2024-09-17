@@ -5,7 +5,6 @@ import { STYLE_GUIDE } from '../../Styles/global'
 
 export const ContainerSignIn = styled.View`
     flex: 1;
-    height: 100%;
     justify-content: center;
     align-items: center;
 `
@@ -186,7 +185,7 @@ export const GoogleAuthView = styled.View`
 export const GoogleAuthLogo = styled.Image`
     width: 23px;
     height: 23px;
-`   
+`
 export const GoogleAuthText = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: ${STYLE_GUIDE.FontSize.subHead300};
@@ -195,7 +194,7 @@ export const GoogleAuthText = styled.Text`
     color: #242A31;
 
 
-` 
+`
 
 export const SignUpView = styled.View`
     flex-direction: row;
@@ -212,6 +211,11 @@ export const SignUpLink = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: ${STYLE_GUIDE.FontSize.subHead400};
     color: ${STYLE_GUIDE.Colors.highlight};
-
-
 `
+
+export const Message = styled.Text`
+    position: absolute;
+    bottom: 230; 
+    color: ${STYLE_GUIDE.Colors.alert};
+    margin-top: 24px; 
+`;
