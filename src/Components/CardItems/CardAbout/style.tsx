@@ -55,7 +55,7 @@ export const ImageWrapper = styled.View`
 export const Line = styled.View`
     position: absolute;
     width: 50px;
-    bottom: 16;
+    bottom: 16px;
     align-self: center;
     border: 3px solid ${STYLE_GUIDE.Colors.white};
     border-radius: 100px;
