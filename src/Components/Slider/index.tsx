@@ -1,27 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, FlatList, Image, Dimensions, StyleSheet } from 'react-native';
-import * as Animatable from 'react-native-animatable';
-import { STYLE_GUIDE } from '../../Styles/global';
-
-import carousel1 from '../../../assets/carousel-1.jpg'
+import { View, FlatList, Image, Dimensions, Animated } from 'react-native';
+import carousel1 from '../../../assets/slider-4.jpg'
 import carousel2 from '../../../assets/carousel-2.jpg'
-import carousel3 from '../../../assets/carousel-3.jpg'
+import carousel3 from '../../../assets/slider-5.jpg'
+import { STYLE_GUIDE } from '../../Styles/global';
 
 const DATA = [
     {
-        image: carousel1,
+        image:
+            carousel1,
     },
     {
-        image: carousel2,
+        image:
+            carousel2,
     },
+    
     {
-        image: carousel3,
+        image:
+            carousel3,
     },
+    
 ];
 
-export const Carousel = () => {
+const Carousel = () => {
     const [activeBanner, setActiveBanner] = useState<number>(0);
     const FlatlistRef = useRef<FlatList>(null);
+    const scrollX = useRef(new Animated.Value(0)).current;
 
     const onViewableItemsChanged = ({ viewableItems }: any) => {
         if (viewableItems[0] !== undefined) {
@@ -53,87 +57,92 @@ export const Carousel = () => {
                 });
                 setActiveBanner(activeBanner + 1);
             }
-        }, 3000);
+        }, 10000);
 
         return () => clearInterval(interval);
     }, [activeBanner]);
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', marginTop: -150 }}>
-            <FlatList
+        <View style={{ alignItems: 'center', marginTop: -130, marginBottom: 60, zIndex: 999 }}>
+            <Animated.FlatList
                 ref={FlatlistRef}
                 data={DATA}
-                renderItem={({ item, index }) => (
+                renderItem={({ item }) => (
                     <View
                         style={{
                             width: Dimensions.get('screen').width * 0.8,
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            height: 180, // Ajuste da altura para garantir visibilidade
+                            height: 180,
                             borderRadius: 30,
-                            marginHorizontal: 10, // Reduzi a margem horizontal para evitar cortes
+                            marginHorizontal: 40,
                         }}
                     >
-                        <Animatable.Image
-                            animation={activeBanner === index ? 'fadeInLeft' : 'fadeOutRight'}
-                            duration={500}
+                        <Animated.Image
                             source={item.image}
                             style={{
-                                width: '100%',
+                                width: 370,
                                 height: '100%',
+                                alignSelf: 'center',
                                 borderRadius: 30,
+                                objectFit: 'cover',
+                                transform: [
+                                    {
+                                        scale: scrollX.interpolate({
+                                            inputRange: [
+                                                (activeBanner - 1) * Dimensions.get('screen').width * 0.8,
+                                                activeBanner * Dimensions.get('screen').width * 0.8,
+                                                (activeBanner + 1) * Dimensions.get('screen').width * 0.8,
+                                                
+                                            ],
+                                            outputRange: [0.9, 1, 0.9],
+                                            extrapolate: 'clamp',
+                                        }),
+                                    },
+                                ],
                             }}
-                            resizeMode='cover' // Use 'cover' para preencher a área do container
+                            resizeMode="contain"
                         />
                     </View>
                 )}
-                style={{
-                    paddingTop: 20,
-                    height: 200, // Altura do FlatList ajustada para acomodar as imagens
-                }}
-                contentContainerStyle={{
-                    paddingHorizontal: 20,
-                }}
-                pagingEnabled
-                viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-                horizontal
                 keyExtractor={(item, index) => String(index)}
+                horizontal
+                pagingEnabled
                 showsHorizontalScrollIndicator={false}
+                viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                    { useNativeDriver: true }
+                )}
             />
-            <View style={styles.pagination}>
-                {DATA.map((_, index) => (
-                    <View
-                        key={index}
-                        style={[
-                            styles.paginationDot,
-                            {
-                                width: activeBanner === index ? 12 : 8, // Largura ajustada conforme estado ativo
-                                backgroundColor:
-                                    activeBanner === index
-                                        ? STYLE_GUIDE.BlueGradient.blue500
-                                        : STYLE_GUIDE.Colors.neutral,
-                            },
-                        ]}
-                    />
-                ))}
+            <View style={{ flexDirection: 'row', marginTop: -17, alignItems: 'center', }}>
+                {DATA.map((_, index) => {
+                    const dotScale = scrollX.interpolate({
+                        inputRange: [
+                            (index - 1) * Dimensions.get('screen').width * 0.8,
+                            index * Dimensions.get('screen').width * 0.8,
+                            (index + 1) * Dimensions.get('screen').width * 0.8,
+                        ],
+                        outputRange: [0.8, 1.2, 0.8],
+                        extrapolate: 'clamp',
+                    });
+
+                    return (
+                        <Animated.View
+                            key={index}
+                            style={{
+                                width: activeBanner !== index ? 10 : 14,
+                                height: activeBanner !== index ? 10 : 8,
+                                borderRadius: 5,
+                                backgroundColor: activeBanner === index ? STYLE_GUIDE.Colors.secundary : STYLE_GUIDE.Colors.gray200,
+                                marginHorizontal: 5,
+                                transform: [{ scale: dotScale }],
+                            }}
+                        />
+                    );
+                })}
             </View>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    pagination: {
-        flexDirection: 'row',
-        position: 'absolute',
-        bottom: 10,
-        marginBottom: -30,
-    },
-    paginationDot: {
-        height: 8,
-        borderRadius: 6,
-        backgroundColor: STYLE_GUIDE.Colors.neutral,
-        marginHorizontal: 4,
-    },
-});
 
 export default Carousel;
