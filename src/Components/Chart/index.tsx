@@ -27,7 +27,7 @@ const Chart = () => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
     const [dataHtml, setDataHtml] = useState<string>('');
 
-    const totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
+    let totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
     const averageCalories = data.length > 0 ? (data.reduce((total, item) => total + item.y, 0) / data.length).toFixed(2) : '0.00';
 
     const db = getFirestore();
@@ -73,6 +73,8 @@ const Chart = () => {
     useEffect(() => {
         fetchFoodData();
         if (context?.foods?.length > 0 && context?.User) {
+            totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
+
             let html = documentTable(context.foods, Number(totalCalories), context.User.name, context.User.birthDate);
             setDataHtml(html)
         }
@@ -167,7 +169,7 @@ const Chart = () => {
                                         }))}
                                         yAxisThickness={0}
                                         xAxisThickness={0}
-                                            disableScroll
+                                        disableScroll
                                         animationDuration={1000}
                                         initialSpacing={10}
                                     />
