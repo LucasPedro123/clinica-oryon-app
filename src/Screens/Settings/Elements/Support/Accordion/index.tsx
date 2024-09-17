@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Linking } from 'react-native';
+import { Linking, Pressable } from 'react-native';
 import * as S from './style'
 import { Animated, TouchableOpacity } from 'react-native'
 import { STYLE_GUIDE } from '../../../../../Styles/global'
@@ -55,43 +55,39 @@ const AccordionElement: React.FC<AccordionProps> = ({
         if (icon === 'phone') {
             Linking.openURL(`tel:${content}`);
         } else if (icon === 'whatsapp') {
-            const whatsappUrl = `whatsapp://send?phone=${content}`;
-            Linking.canOpenURL(whatsappUrl)
-                .then(supported => {
-                    if (supported) {
-                        return Linking.openURL(whatsappUrl);
-                    } else {
-                        alert('WhatsApp não está instalado no dispositivo.');
-                    }
-                });
+            const whatsappUrl = `https://wa.me/5511993516440`;
+            Linking.openURL(whatsappUrl)
         } else if (icon === 'email') {
             Linking.openURL(`mailto:${content}`);
         } else if (icon === 'web') {
             Linking.openURL(content);
         }
     };
-    
+
 
     return (
         <S.AccordionContainer>
-    
-            <TouchableOpacity onPress={() => { toggleAccordion() }}>
+
+            <Pressable onPress={() => { toggleAccordion() }}>
                 <S.AccordionView>
                     <S.AccordionWrapper>
-                        {
-                            icon === 'phone' ? <MaterialIcons name="phone-in-talk" size={24} color={`${STYLE_GUIDE.Colors.primary}`} /> :
-                            icon === 'whatsapp' ? <FontAwesome5 name="whatsapp" size={24} color={STYLE_GUIDE.Colors.primary} /> :
-                            icon === 'email' ? <Fontisto name="email" size={24} color="black" /> :
-                            <MaterialCommunityIcons name="web" size={24} color={STYLE_GUIDE.Colors.primary} />
-                        }
-                        
+                        <S.IconContent>
+                            {
+                                icon === 'phone' ? <MaterialIcons name="phone-in-talk" size={24} color={`${STYLE_GUIDE.Colors.primary}`} /> :
+                                    icon === 'whatsapp' ? <FontAwesome5 name="whatsapp" size={24} color={STYLE_GUIDE.Colors.primary} /> :
+                                        icon === 'email' ? <Fontisto name="email" size={24} color="black" /> :
+
+                                            <MaterialCommunityIcons name="web" size={24} color={STYLE_GUIDE.Colors.primary} />
+                            }
+                        </S.IconContent>
+
                         <S.AccordionTitle>
                             {title}
                         </S.AccordionTitle>
                     </S.AccordionWrapper>
                     <SimpleLineIcons name={open ? "arrow-up" : "arrow-down"} size={24} color={STYLE_GUIDE.Colors.primary} />
                 </S.AccordionView>
-            </TouchableOpacity>
+            </Pressable>
             <Animated.View style={{ height: heightAnimationInterpolation, overflow: 'hidden', justifyContent: 'center', }}>
                 {open && (
                     <TouchableOpacity onPress={handleContentClick}>
@@ -101,10 +97,10 @@ const AccordionElement: React.FC<AccordionProps> = ({
                     </TouchableOpacity>
                 )}
             </Animated.View>
-    
+
         </S.AccordionContainer>
     )
-    
+
 }
 
 export default AccordionElement
