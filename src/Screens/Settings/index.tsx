@@ -7,7 +7,6 @@ import Feather from '@expo/vector-icons/Feather';
 
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -64,7 +63,7 @@ export function Settings({ navigation }: any) {
                     <S.SettingsCard>
                         <S.CardWrapper>
                             <S.IconContent>
-                                <AntDesign name="user" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                                <Feather name="user" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
                             </S.IconContent>
                             <S.CardName>Perfil do Usuário</S.CardName>
                         </S.CardWrapper>
