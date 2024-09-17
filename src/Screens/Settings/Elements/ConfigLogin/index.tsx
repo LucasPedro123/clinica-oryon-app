@@ -72,24 +72,20 @@ export const ConfigLoginScreen: React.FC = ({ navigation }: any) => {
         try {
             const userData = await AsyncStorage.getItem('user');
             console.log(context?.User)
-            if (user && user.email) {
-                // Update the password in AsyncStorage
+            if (user && user.email && context?.User.firestoreId) {
                 if (userData) {
                     console.log(userData)
                     const parsedData = JSON.parse(userData);
                     parsedData.pass = newPassword;
                     await AsyncStorage.setItem('user', JSON.stringify(parsedData));
                 }
-                // Update the user's document in Firestore
                 const userDoc = doc(db, 'users', context?.User.firestoreId);
                 await updateDoc(userDoc, { password: newPassword });
 
 
-                // Reauthenticate the user
                 const credential = EmailAuthProvider.credential(user.email, currentPassword);
                 await reauthenticateWithCredential(user, credential);
 
-                // Update the password in Firebase Auth
                 await updatePassword(user, newPassword);
 
 
