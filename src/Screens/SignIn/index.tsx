@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, Alert, ScrollView, ActivityIndicator, Dimensions, ScaledSize } from 'react-native';
+import { Text, TouchableOpacity, Alert, ScrollView, ActivityIndicator, Dimensions, ScaledSize, StatusBar } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as S from './style';
 import logo from '../../../assets/logoApp.png';
@@ -9,8 +9,6 @@ import GoogleLogo from '../../../assets/GoogleLogo.png';
 import { UserContext } from '../../Context/User.context';
 import { STYLE_GUIDE } from '../../Styles/global';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BottomTab } from '../../Components/BottomTab';
-
 
 export default function SignIn({ navigation }: any) {
     const [checkIsVisible, setCheckIsVisible] = useState(false);
@@ -19,21 +17,19 @@ export default function SignIn({ navigation }: any) {
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
-    const [loading, setLoading] = useState(false); // Estado para controlar o carregamento
+    const [loading, setLoading] = useState(false);
     const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // Estado para armazenar a altura do dispositivo
     const context = useContext(UserContext);
+    const [errorMessage, setErroMessage] = useState<string>()
 
- 
+
 
     useEffect(() => {
         setScreenHeight(Dimensions.get('window').height + 30);
-
-
-
     }, []);
 
     const handleSignIn = () => {
-        setLoading(true); // Inicia o carregamento ao iniciar o login
+        setLoading(true); 
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const userId = userCredential.user.uid;
@@ -58,16 +54,19 @@ export default function SignIn({ navigation }: any) {
                 if (error.code === 'auth/invalid-email') {
                     setEmailError(true);
                     setPasswordError(false);
+                    setErroMessage('Email inválido')
                 } else if (error.code === 'auth/wrong-password' || error.code === 'auth/missing-password' || error.code === 'auth/too-many-requests') {
                     setEmailError(false);
                     setPasswordError(true);
+                    setErroMessage('Senha inválida')
                 } else {
                     setEmailError(true);
                     setPasswordError(true);
+                    setErroMessage('Email ou Senha Inválidos')
                 }
             })
             .finally(() => {
-                setLoading(false); // Finaliza o carregamento após o login
+                setLoading(false);
             });
     };
 
@@ -80,7 +79,8 @@ export default function SignIn({ navigation }: any) {
     };
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', height: screenHeight }} keyboardShouldPersistTaps="handled">
+        <ScrollView  contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', height: screenHeight }} keyboardShouldPersistTaps="handled">
+            <StatusBar backgroundColor={'transparent'} barStyle={'dark-content'} />
             <S.ContainerSignIn >
                 <S.LogoContainer>
                     <S.Logo source={logo} />
@@ -127,6 +127,7 @@ export default function SignIn({ navigation }: any) {
                                 <S.ForgotPassText>Esqueceu a senha</S.ForgotPassText>
                             </TouchableOpacity>
                         </S.ForgotPassView>
+                            <S.Message>{errorMessage}</S.Message>
                         <S.FormsButtonView>
                             {loading ? (
                                 <S.FormsButtonSpinner>

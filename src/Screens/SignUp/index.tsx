@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Pressable, View, Text } from 'react-native';
+import { ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Platform, Pressable, View, Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as S from './style';
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc } from 'firebase/firestore';
 import { auth } from '../../Services/fireConfig';
 import logo from '../../../assets/logoApp.png';
+import axios from 'axios'; // Import axios for API request
 import { UserContext } from '../../Context/User.context';
 import { STYLE_GUIDE } from '../../Styles/global';
 
@@ -17,6 +18,7 @@ export default function SignUp({ navigation }: any) {
 
     const [passIsVisible, setPassIsVisible] = useState(true);
     const [name, setName] = useState('');
+    const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
@@ -31,6 +33,7 @@ export default function SignUp({ navigation }: any) {
     const [birthDateError, setBirthDateError] = useState(false);
     const [generalError, setGeneralError] = useState('');
     const [isLoading, setIsLoading] = useState(false); // State to manage loading state
+    const [phoneFormated, setphoneFormated] = useState(''); // State to manage loading state
 
     const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // State to store device height
 
@@ -40,8 +43,31 @@ export default function SignUp({ navigation }: any) {
     };
 
     const validatePhone = (phone: string) => {
-        const re = /^[0-9]{10,11}$/;
+        const re = /^\(\d{2}\) \d{5}-\d{4}$/;
         return re.test(phone);
+    };
+
+    const formatPhoneNumber = (phoneNumber: string) => {
+        const cleaned = phoneNumber.replace(/\D/g, '');
+        let formattedPhoneNumber = phoneNumber;
+
+        if (cleaned.length === 11) {
+            formattedPhoneNumber = `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7, 13)}`;
+        }
+
+        setPhone(formattedPhoneNumber);
+    };
+
+
+
+    const verifyEmail = async (email: string) => {
+        try {
+            const response = await axios.get(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=e5acd40e421ecda5fd71ccf9426e50c17e19a536`);
+            return response.data.data.status === 'valid';
+        } catch (error) {
+            console.error('Erro ao verificar email:', error);
+            return false;
+        }
     };
 
     const handleSignUp = async () => {
@@ -49,7 +75,7 @@ export default function SignUp({ navigation }: any) {
         const isEmailValid = validateEmail(email);
         const isPhoneValid = validatePhone(phone);
         const isPasswordValid = password.trim() !== '';
-        const isBirthDateValid = birthDate !== null; // Check if birth date is selected
+        const isBirthDateValid = birthDate !== null;
 
         setNameError(!isNameValid);
         setEmailError(!isEmailValid);
@@ -63,8 +89,15 @@ export default function SignUp({ navigation }: any) {
         }
 
         try {
-            setIsLoading(true); // Start loading spinner
+            setIsLoading(true);
 
+            const isEmailExist = await verifyEmail(email);
+            if (!isEmailExist) {
+                setEmailError(true);
+                setGeneralError('Email não existe ou é inválido.');
+                return;
+            }
+            setEmailError(false);
             const signInMethods = await fetchSignInMethodsForEmail(auth, email);
             if (signInMethods.length > 0) {
                 setEmailError(true);
@@ -75,36 +108,56 @@ export default function SignUp({ navigation }: any) {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const userId = userCredential.user.uid;
 
-            await addDoc(collection(db, 'users'), {
+            const userDocRef = await addDoc(collection(db, 'users'), {
                 userId,
                 name,
+                surname,
                 email,
-                phone,
+                phone: phone.replace(/\D/g, ''),
                 password,
                 photoURL,
-                birthDate: birthDate?.toISOString() // Save birth date in Firestore
+                birthDate: birthDate?.toISOString()
+            });
+
+            const firestoreId = userDocRef.id;
+
+            await updateDoc(userDocRef, { firestoreId });
+
+            context?.setUser({
+                userId,
+                firestoreId,
+                name,
+                surname,
+                email,
+                phone: phone.replace(/\D/g, ''),
+                password,
+                photoURL,
+                birthDate: birthDate?.toISOString(),
             });
 
             navigation.navigate('signin');
         } catch (error: any) {
             if (error.code === 'auth/email-already-in-use') {
                 setEmailError(true);
+                setGeneralError('Email já está em uso.');
+            } else if (error.code === "auth/weak-password") {
+                setGeneralError('Senha fraca');
             }
-            setGeneralError('Erro ao criar conta. Por favor, tente novamente.');
+            console.log(error.code);
         } finally {
             setIsLoading(false);
         }
     };
 
+
     const handleNavigateForSignIn = () => {
         navigation.navigate('signin');
     };
 
-    const handleDateChange = (selectedDate: Date | undefined) => {
-        setShowDatePicker(false);
-        if (selectedDate) {
-            setBirthDate(selectedDate);
-        }
+    const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+        const currentDate = selectedDate || new Date();
+        setShowDatePicker(Platform.OS === 'ios');
+        setBirthDate(currentDate);
     };
 
     useEffect(() => {
@@ -115,8 +168,8 @@ export default function SignUp({ navigation }: any) {
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', height: screenHeight - 5 }} keyboardShouldPersistTaps="handled">
-            <S.ContainerSignIn style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }} >
+        <ScrollView contentContainerStyle={{paddingTop: '20%'}}  keyboardShouldPersistTaps="handled">
+            <S.ContainerSignIn style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}} >
                 <S.LogoContainer>
                     <S.Logo source={logo} />
                 </S.LogoContainer>
@@ -126,23 +179,36 @@ export default function SignUp({ navigation }: any) {
                         <S.SignInSubTitle>Conecte-se para continuar.</S.SignInSubTitle>
                     </S.FormTextWrapper>
                     <S.FormsContent>
-                        <S.InputWrapper>
-                            <S.InputName>Nome</S.InputName>
-                            <S.Input
-                                placeholder="Por favor, insira seu nome."
-                                value={name}
-                                onChangeText={setName}
-                                style={{ borderColor: nameError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
-                            />
-                        </S.InputWrapper>
+                        <S.InputView>
+                            <S.InputContent>
+                                <S.InputName>Nome</S.InputName>
+                                <S.InputUserName
+                                    placeholder="Insira o nome"
+                                    value={name}
+                                    maxLength={16}
+                                    onChangeText={setName}
+                                    style={{ borderColor: nameError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
+                                />
+                            </S.InputContent>
+                            <S.InputContent>
+                                <S.InputName>Sobrenome</S.InputName>
+                                <S.InputUserName
+                                    placeholder="Insira o sobrenome"
+                                    value={surname}
+                                    maxLength={30}
+                                    onChangeText={setSurname}
+                                    style={{ borderColor: nameError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
+                                />
+                            </S.InputContent>
+                        </S.InputView>
                         <S.InputWrapper>
                             <S.InputName>Número de Telefone</S.InputName>
                             <S.Input
                                 keyboardType="phone-pad"
-                                placeholder="Por favor, insira seu telefone."
+                                placeholder="Por favor, digite seu telefone"
                                 value={phone}
-                                onChangeText={setPhone}
-                                maxLength={11}
+                                onChangeText={(text) => { formatPhoneNumber(text) }}
+                                maxLength={15}
                                 style={{ borderColor: phoneError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor }}
                             />
                         </S.InputWrapper>
@@ -166,14 +232,18 @@ export default function SignUp({ navigation }: any) {
                                     style={{ borderColor: birthDateError ? STYLE_GUIDE.Colors.alert : STYLE_GUIDE.Colors.borderColor, color: birthDate ? 'black' : '#9e9e9e' }}
                                 />
                             </Pressable>
-                            <DateTimePickerModal
-                                isVisible={showDatePicker}
-                                mode="date"
-                                date={birthDate || new Date()}
-                                onConfirm={handleDateChange}
-                                onCancel={() => setShowDatePicker(false)}
-                                maximumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 12))}
-                            />
+                            {showDatePicker && (
+                                <DateTimePicker
+                                    value={birthDate || new Date()}
+                                    mode="date"
+
+                                    display="spinner"
+                                    onChange={handleDateChange}
+                                    maximumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 12))}
+                                    positiveButton={{ label: 'OK', textColor: STYLE_GUIDE.Colors.secundary }}
+                                    negativeButton={{ label: 'Cancel', textColor: STYLE_GUIDE.Colors.secundary }}
+                                />
+                            )}
                         </S.InputWrapper>
                         <S.InputWrapper>
                             <S.InputName>Senha</S.InputName>
@@ -189,6 +259,10 @@ export default function SignUp({ navigation }: any) {
                                 </TouchableOpacity>
                             </S.PasswordView>
                         </S.InputWrapper>
+
+                        {generalError !== '' && (
+                            <S.GeneralErrorText style={{ color: STYLE_GUIDE.Colors.alert, marginTop: 10 }}>{generalError}</S.GeneralErrorText>
+                        )}
 
                         <S.FormsButtonView>
                             <S.FormsButton onPress={handleSignUp} disabled={isLoading} style={{ backgroundColor: isLoading ? '#C2A3D4' : STYLE_GUIDE.Colors.secundary }}>

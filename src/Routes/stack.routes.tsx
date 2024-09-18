@@ -121,7 +121,7 @@ function MainTabs() {
                 screenOptions={({ route }) => ({
                     tabBarStyle: {
                         display: route.name === 'Search' ? 'none' : 'flex',
-                        backgroundColor: '#090d53',
+                        backgroundColor: STYLE_GUIDE.Colors.primary,
                         position: 'absolute',
                         marginBottom: 23,
                         right: 16,

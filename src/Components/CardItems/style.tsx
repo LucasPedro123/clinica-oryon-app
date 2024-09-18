@@ -1,12 +1,11 @@
 import styled from 'styled-components/native'
 import { STYLE_GUIDE } from '../../Styles/global'
-import { Shadow } from 'react-native-shadow-2';
 import { View } from 'react-native';
 
 export const Container = styled.ScrollView`
     flex: 1;
-    margin-top: 35px;
-    margin-bottom: -20px;
+    margin-top: -14px;
+    margin-bottom: 29px;
     height: 100%;
 `
 
@@ -15,24 +14,21 @@ export const Cards = styled.View`
     flex-direction: row;
     gap: 22px;
     height: 100%;
-    padding: 20px 0px;
+    padding: 20px 24px;
 `
 export const Card = styled.View`
-  display: flex;
-  justify-content: space-between;
-  width: 234px;
-  height: 100%;
-  background: #fff;
-  border-radius: 16px;
-  padding: 14px 14px;
+    display: flex;
+    justify-content: space-between;
+    width: 234px;
+    height: 100%;
+    background: ${STYLE_GUIDE.Colors.backgroundApp};
+    border-radius: 16px;
+    padding: 14px 14px;
 
-  /* Shadow styles for iOS */
-  shadow-offset: 3px 3px;
-  shadow-opacity: 0.25;
-  shadow-radius: 20px;
-
-  /* Shadow styles for Android */
-  elevation: 9;
+    shadow-offset: 3px 3px;
+    shadow-opacity: 0.25;
+    shadow-radius: 20px;
+    elevation: 9;
 `;
 
 export const CardImage = styled.Image`
@@ -55,7 +51,7 @@ export const CardTitle = styled.Text`
 `
 export const CardDescription = styled.Text`
     font-family: 'Raleway';
-    font-weight: 400;
+    font-weight: 600;
     color: ${STYLE_GUIDE.Colors.gray100};
     font-size: ${STYLE_GUIDE.FontSize.description};
     line-height: 14px;

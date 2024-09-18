@@ -43,12 +43,12 @@ export const FormsContent = styled.View`
     width: 100%;
     align-items: center;
     margin-top: 15px;
-    gap: 12px;
     text-align: end;
 `
 export const InputWrapper = styled.View`
     margin-top: 11px;
     gap: 7px;
+    width: 360px;
     color: ${STYLE_GUIDE.Colors.gray200};
 `
 export const InputName = styled.Text`
@@ -60,7 +60,7 @@ export const Input = styled.TextInput`
     background: transparent;
     border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
     border-radius: 5px;
-    width: 360px;
+    width: 100%;
     height: 40px;
     padding: 0px 13px;
 `
@@ -206,3 +206,27 @@ export const GoogleAuthText = styled.Text`
 
 
 `   
+
+export const GeneralErrorText = styled.Text`
+    position: absolute;
+    bottom: 165px;
+`
+
+export const InputView = styled.View`
+    flex-direction: row;
+    gap: 20px;
+    width: 360px;
+`
+
+export const InputContent = styled.View`
+    flex: 1;
+`
+
+export const InputUserName = styled.TextInput`
+    background: transparent;
+    border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
+    border-radius: 5px;
+    height: 40px;
+    width: 100%;
+    padding: 0px 13px;
+`
