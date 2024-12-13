@@ -4,9 +4,8 @@ import { STYLE_GUIDE } from '../../Styles/global'
 
 
 export const ContainerSignIn = styled.View`
-    flex: 1;
-    justify-content: center;
     align-items: center;
+    padding: 0px 29px;
 `
 
 export const LogoContainer = styled.View`
@@ -48,18 +47,18 @@ export const FormsContent = styled.View`
 `
 export const InputWrapper = styled.View`
     gap: 7px;
+    width: 100%;
     color: ${STYLE_GUIDE.Colors.gray200};
 `
 export const InputName = styled.Text`
-    width: 100%;
-    align-items: start;
+    color: ${STYLE_GUIDE.Colors.primary};
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
 `
 
 export const Input = styled.TextInput`
     background: transparent;
     border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
     border-radius: 5px;
-    width: 360px;
     height: 40px;
     padding: 0px 13px;
 `
@@ -71,15 +70,16 @@ export const PasswordView = styled.View`
     background: transparent;
     border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
     border-radius: 5px;
-    width: 360px;
+    width: 100%;
     height: 40px;
     padding: 0px 13px;
 
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
 `
 export const ForgotPassView = styled.View`
-    width: 360px;
+    width: 100%;
     flex-direction: row;
     justify-content: space-between;
 `
@@ -88,14 +88,13 @@ export const ForgotPassText = styled.Text`
     font-size: ${STYLE_GUIDE.FontSize.subHead400};
     color: ${STYLE_GUIDE.Colors.alert};
 
-
 `
 
-export const CheckBoxView = styled.View`
+export const CheckBoxView = styled.TouchableOpacity`
     flex-direction: row;
     gap: 7px;
 `
-export const CheckBox = styled.TouchableOpacity`
+export const CheckBox = styled.View`
     background: transparent;
     border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
     border-radius: 5px;
@@ -109,32 +108,36 @@ export const CheckBox = styled.TouchableOpacity`
 export const CheckBoxText = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: ${STYLE_GUIDE.FontSize.subHead400};
+    color: ${STYLE_GUIDE.Colors.primary};
 
 `
 
 export const FormsButtonView = styled.View`
-    width: 100%;
     gap: 27px;
+    width: 100%;
     align-items: center;
-    margin-top: 127px;
+    margin-top: 30%;
 `
+
 export const FormsButton = styled.TouchableOpacity`
-    width: 360px;
     height: 45px;
     border-radius: 5px;
     background: ${STYLE_GUIDE.Colors.secundary};
-
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-
-
-
 `
+export const ButtonContent = styled.View`
+    width: 100%;
+    align-items: center;
+`
+
 export const FormsButtonSpinner = styled.View`
-    width: 360px;
+    max-width: 400px;
     height: 45px;
     border-radius: 5px;
     background: #C2A3D4;
+    flex-direction: row;
 
     align-items: center;
     justify-content: center;
@@ -146,18 +149,17 @@ export const ButtonText = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: ${STYLE_GUIDE.FontSize.subHead200};
     color: ${STYLE_GUIDE.Colors.white};
-    line-height: 23px;
-
 `
+
 export const DividerView = styled.View`
     flex-direction: row;
-    width: 360px;
+    width: 100%;
     justify-content: space-between;
     align-items: center;
 `
 
 export const Divider = styled.View`
-    width: 135px;
+    width: 40%;
     height: 0.5px;
     background-color: ${STYLE_GUIDE.Colors.black};
 `
@@ -168,44 +170,15 @@ export const DividerText = styled.Text`
     font-size: ${STYLE_GUIDE.FontSize.subHead400};
 `
 
-export const GoogleAuthView = styled.View`
-
-    background: transparent;
-    border: 1px solid ${STYLE_GUIDE.Colors.borderColor};
-    border-radius: 5px;
-    width: 173px;
-    height: 45px;
-
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    gap: 22px;
-`
-
-export const GoogleAuthLogo = styled.Image`
-    width: 23px;
-    height: 23px;
-`
-export const GoogleAuthText = styled.Text`
-    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
-    font-size: ${STYLE_GUIDE.FontSize.subHead300};
-    line-height: 19px;
-
-    color: #242A31;
-
-
-`
-
 export const SignUpView = styled.View`
     flex-direction: row;
     gap: 9px;
 `
+
 export const SignUpText = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: ${STYLE_GUIDE.FontSize.subHead400};
     color: ${STYLE_GUIDE.Colors.label};
-
-
 `
 export const SignUpLink = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
@@ -215,7 +188,7 @@ export const SignUpLink = styled.Text`
 
 export const Message = styled.Text`
     position: absolute;
-    bottom: 230; 
+    bottom: 40%;
     color: ${STYLE_GUIDE.Colors.alert};
     margin-top: 24px; 
 `;
