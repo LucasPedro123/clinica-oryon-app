@@ -1,6 +1,6 @@
 import { Food } from "../../../Interfaces/app.interfaces";
 
-function documentTable(foodsData: Food[], totalCalories: number, username: string, birthDateISO: string) {
+function documentTable(foodsData: Food[], totalCalories: number, username: string, birthDateISO: string, photo?: string) {
     let foods = foodsData;
 
     const age = calculateAge(birthDateISO);
@@ -60,14 +60,14 @@ function documentTable(foodsData: Food[], totalCalories: number, username: strin
     <body style="display: flex; flex-direction: column; justify-content: center;">
         <img 
             width="200"
-            src="https://github.com/LucasPedro123/clinica-oryon-app/assets/107084988/41f0b822-c276-4740-9416-a765a6a8740e" 
+            src="https://github.com/LucasPedro123/clinica-oryon-app/assets/107084988/41f0b822-c276-4740-9416-a765a6a8740e"
             style="margin: 15px auto;"
         />
 
         <h4 style="padding-left: 20px;">${formattedStartOfWeek} a ${formattedEndOfWeek}</h4>
         <div style="display: flex; gap: 20px; padding-left: 20px;">
-            <img style="border-radius: 20px; width: 100px; height: 100px;"
-                src="https://static.vecteezy.com/ti/vetor-gratis/p1/9292244-default-avatar-icon-vector-of-social-media-user-vetor.jpg"
+            <img style="border-radius: 20px; width: 100px; height: 100px; object-fit: cover;"
+                src=${photo == null ? "https://static.vecteezy.com/ti/vetor-gratis/p1/9292244-default-avatar-icon-vector-of-social-media-user-vetor.jpg" : `${photo}`}
                 alt="Avatar padrão">
             <div>
                 <p><b>${username}</b></p>
