@@ -19,6 +19,7 @@ export interface Food {
     portion: string;
     calories: number;
     date: any;
+    quantity?: number;
 }
 
 export interface FoodContextType {
@@ -30,24 +31,12 @@ export interface FoodContextType {
 
 
 export interface IUserPros {
-    UserName: string | undefined;
-    setUserName: (user: string) => void;
-
-    UserEmail: string | undefined;
-    setEmail: (user: string) => void;
 
     userId: string | null;
     setUserId: (id: string) => void;
 
-    UserPhone: number | undefined;
-    setUserPhone: (user: number) => void;
-
-    UserPass: string | undefined;
-    setUserPass: (user: string) => void;
-
-    User: User;
+    User: User | undefined;
     setUser: (user: any) => void;
-
     
     removeFood: (foodRemove: Food) => void;
 
@@ -58,9 +47,8 @@ export interface IUserPros {
     setUserPhoto: (photoURL: string) => void;
 
     foods: any;
-    setFoods: Dispatch<SetStateAction<any[]>>;
+    setFoods: (foods: Food[]) => void;
 
-    fetchUserFoods: () => Promise<void>;
 
     totalCaloriesDay: number;
     setTotalCaloriesDay: (caloriesDayValue: number) => void;
