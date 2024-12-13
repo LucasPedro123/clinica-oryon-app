@@ -1,39 +1,32 @@
 import styled from "styled-components/native";
 import { STYLE_GUIDE } from "../../Styles/global";
 
+export const Container = styled.View`
+    justify-content: space-around;
+    flex: 1px;    
+`
+
 export const ChartContainer = styled.View`
     flex: 1;
-    width: 100%;
-    height: 100%;
-    position: relative;
 `;
 
-export const Title = styled.Text`
-    font-weight: 600;
-    font-size: 13px;
-    line-height: 15px;
-    color: ${STYLE_GUIDE.Colors.gray100};
-    align-self: center;
-    margin-top: 63px;
+export const Wrapper = styled.View`
+    justify-content: space-around;
+    height: 100%;
+`
+export const Content = styled.View`
+    align-items: center;
+    gap: 10px;
 `
 
 export const NumberTitle = styled.Text`
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: 40px;
     line-height: 47px;
-    margin: 28px 0px;
     color: ${STYLE_GUIDE.Colors.primary};
 `
 
-export const ChartBorderView = styled.View`
-    border-radius: 10px;
-    width: 100%;
-    max-width: 370px;
-    align-items: center;
-`;
 export const ChartView = styled.View`
-    padding: 20px 20px;
-    height: 300px;
     width: 100%;
     max-width: 800px;
 `
@@ -122,7 +115,6 @@ export const modalWrapper = styled.View`
 
 export const ChartItems = styled.View`
     width: 100%;
-    margin-bottom: 130px;
     padding: 0px 20px;
 
     display: flex;
@@ -132,7 +124,6 @@ export const ChartItems = styled.View`
     justify-content: center;
 `
 export const ChartItem = styled.View`
-    width: 101px;
     height: 67px;
     background: #F9F9F9;
     shadow-offset: 0.5px 0.5px;
@@ -140,7 +131,7 @@ export const ChartItem = styled.View`
     shadow-radius: 15px;
     elevation: 3;
     border-radius: 12px;
-
+    padding: 5px;
     align-items: center;
     justify-content: center;
     gap: 8px;
