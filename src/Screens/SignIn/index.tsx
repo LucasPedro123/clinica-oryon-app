@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, Alert, ScrollView, ActivityIndicator, Dimensions, ScaledSize, StatusBar } from 'react-native';
+import { Text, TouchableOpacity, Alert, ScrollView, Dimensions, ScaledSize, StatusBar, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as S from './style';
 import logo from '../../../assets/logoApp.png';
@@ -29,7 +29,7 @@ export default function SignIn({ navigation }: any) {
     }, []);
 
     const handleSignIn = () => {
-        setLoading(true); 
+        setLoading(true);
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const userId = userCredential.user.uid;
@@ -79,7 +79,7 @@ export default function SignIn({ navigation }: any) {
     };
 
     return (
-        <ScrollView  contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', height: screenHeight }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', height: screenHeight }} keyboardShouldPersistTaps="handled">
             <StatusBar backgroundColor={'transparent'} barStyle={'dark-content'} />
             <S.ContainerSignIn >
                 <S.LogoContainer>
@@ -117,8 +117,8 @@ export default function SignIn({ navigation }: any) {
                         </S.InputWrapper>
 
                         <S.ForgotPassView>
-                            <S.CheckBoxView>
-                                <S.CheckBox onPress={() => setCheckIsVisible(!checkIsVisible)}>
+                            <S.CheckBoxView onPress={() => setCheckIsVisible(!checkIsVisible)}>
+                                <S.CheckBox  >
                                     <Text>{checkIsVisible ? <Feather name="check" /> : ''}</Text>
                                 </S.CheckBox>
                                 <S.CheckBoxText>Lembre-me</S.CheckBoxText>
@@ -127,15 +127,19 @@ export default function SignIn({ navigation }: any) {
                                 <S.ForgotPassText>Esqueceu a senha</S.ForgotPassText>
                             </TouchableOpacity>
                         </S.ForgotPassView>
-                            <S.Message>{errorMessage}</S.Message>
+                        <S.Message>{errorMessage}</S.Message>
                         <S.FormsButtonView>
                             {loading ? (
                                 <S.FormsButtonSpinner>
-                                    <ActivityIndicator size="small" color={STYLE_GUIDE.Colors.white} />
+                                    <S.ButtonContent>
+                                        <ActivityIndicator size="small" color={STYLE_GUIDE.Colors.white} />
+                                    </S.ButtonContent>
                                 </S.FormsButtonSpinner>
                             ) : (
                                 <S.FormsButton onPress={handleSignIn}>
-                                    <S.ButtonText>Login</S.ButtonText>
+                                    <S.ButtonContent>
+                                        <S.ButtonText>Login</S.ButtonText>
+                                    </S.ButtonContent>
                                 </S.FormsButton>
                             )}
                             <S.DividerView>
