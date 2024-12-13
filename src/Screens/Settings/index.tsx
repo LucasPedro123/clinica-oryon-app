@@ -58,66 +58,67 @@ export function Settings({ navigation }: any) {
     return (
         <S.Container>
             <S.SettingsTitle>Configurações</S.SettingsTitle>
-            <S.SettingsCards>
-                <Pressable onPress={handleNavigateUserConfig}>
-                    <S.SettingsCard>
-                        <S.CardWrapper>
-                            <S.IconContent>
-                                <Feather name="user" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                            </S.IconContent>
-                            <S.CardName>Perfil do Usuário</S.CardName>
-                        </S.CardWrapper>
-                        <TouchableOpacity onPress={handleNavigateUserConfig}>
-                            <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                        </TouchableOpacity>
-                    </S.SettingsCard>
-                </Pressable>
-                <Pressable onPress={handleNavigateNotifications}>
-                    <S.SettingsCard>
-                        <S.CardWrapper>
-                            <S.IconContent>
-                                <Fontisto name="bell" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                            </S.IconContent>
-                            <S.CardName>Notificações</S.CardName>
-                        </S.CardWrapper>
-                        <TouchableOpacity onPress={handleNavigateNotifications}>
-                            <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                        </TouchableOpacity>
-                    </S.SettingsCard>
-                </Pressable>
-                <Pressable onPress={handleNavigateConfigLogin}>
-                    <S.SettingsCard>
-                        <S.CardWrapper>
-                            <S.IconContent>
-                                <MaterialCommunityIcons name="account-key-outline" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                            </S.IconContent>
-                            <S.CardName>Configurações de Login</S.CardName>
-                        </S.CardWrapper>
-                        <TouchableOpacity onPress={handleNavigateConfigLogin}>
-                            <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                        </TouchableOpacity>
-                    </S.SettingsCard>
-                </Pressable>
-                <Pressable onPress={handleNavigateSupportCenter}>
-                    <S.SettingsCard>
-                        <S.CardWrapper>
-                            <S.IconContent>
-                                <MaterialIcons name="phone-in-talk" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                            </S.IconContent>
-                            <S.CardName>Centro de Suporte</S.CardName>
-                        </S.CardWrapper>
-                        <TouchableOpacity onPress={handleNavigateSupportCenter}>
-                            <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                        </TouchableOpacity>
-                    </S.SettingsCard>
-                </Pressable>
-            </S.SettingsCards>
-            <S.Wrapper>
-                <TouchableOpacity onPress={handleNavigateLogOut}>
-                    <FontAwesome6 name="arrow-right-to-bracket" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
-                </TouchableOpacity>
-                <S.Text>Sair da Conta</S.Text>
-            </S.Wrapper>
+            <S.Content>
+
+                <S.SettingsCards>
+                    <Pressable onPress={handleNavigateUserConfig}>
+                        <S.SettingsCard>
+                            <S.CardWrapper>
+                                <S.IconContent>
+                                    <Feather name="user" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                                </S.IconContent>
+                                <S.CardName>Perfil do Usuário</S.CardName>
+                            </S.CardWrapper>
+                            <TouchableOpacity onPress={handleNavigateUserConfig}>
+                                <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                            </TouchableOpacity>
+                        </S.SettingsCard>
+                    </Pressable>
+                    <Pressable onPress={handleNavigateNotifications}>
+                        <S.SettingsCard>
+                            <S.CardWrapper>
+                                <S.IconContent>
+                                    <Fontisto name="bell" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                                </S.IconContent>
+                                <S.CardName>Notificações</S.CardName>
+                            </S.CardWrapper>
+                            <TouchableOpacity onPress={handleNavigateNotifications}>
+                                <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                            </TouchableOpacity>
+                        </S.SettingsCard>
+                    </Pressable>
+                    <Pressable onPress={handleNavigateConfigLogin}>
+                        <S.SettingsCard>
+                            <S.CardWrapper>
+                                <S.IconContent>
+                                    <MaterialCommunityIcons name="account-key-outline" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                                </S.IconContent>
+                                <S.CardName>Configurações de Login</S.CardName>
+                            </S.CardWrapper>
+                            <TouchableOpacity onPress={handleNavigateConfigLogin}>
+                                <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                            </TouchableOpacity>
+                        </S.SettingsCard>
+                    </Pressable>
+                    <Pressable onPress={handleNavigateSupportCenter}>
+                        <S.SettingsCard>
+                            <S.CardWrapper>
+                                <S.IconContent>
+                                    <MaterialIcons name="phone-in-talk" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                                </S.IconContent>
+                                <S.CardName>Centro de Suporte</S.CardName>
+                            </S.CardWrapper>
+                            <TouchableOpacity onPress={handleNavigateSupportCenter}>
+                                <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                            </TouchableOpacity>
+                        </S.SettingsCard>
+                    </Pressable>
+                </S.SettingsCards>
+                <S.Wrapper onPress={handleNavigateLogOut}>
+                        <FontAwesome6 name="arrow-right-to-bracket" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
+                    <S.Text>Sair da Conta</S.Text>
+                </S.Wrapper>
+            </S.Content>
         </S.Container>
     );
 }

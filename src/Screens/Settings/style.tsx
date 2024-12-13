@@ -4,8 +4,12 @@ import { STYLE_GUIDE } from '../../Styles/global'
 export const Container = styled.View`
     flex: 1;
     align-items: center;
+    justify-content: center;
     gap: 58px;
-    margin-top: 131px;
+`
+
+export const Content = styled.View`
+    gap: 20%;
 `
 
 export const SettingsTitle = styled.Text`
@@ -21,7 +25,7 @@ export const SettingsCards = styled.View`
 `
 export const SettingsCard = styled.View`
     width: 100%;
-    padding: 0px 30px;
+    padding: 3px 29px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -57,10 +61,9 @@ export const IconContent = styled.View`
     elevation: 3;
 `
 
-export const Wrapper = styled.View`
+export const Wrapper = styled.TouchableOpacity`
     gap: 22px;
     align-items: center;
-    margin-top: 94px;
 `
 export const Text = styled.Text`
     font-weight: 500;
