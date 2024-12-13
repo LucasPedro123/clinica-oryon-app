@@ -109,7 +109,7 @@ export const SettingsCards = styled.View`
 margin-top: 24px;
     gap: 30px;
 `
-export const SettingsCard = styled.View`
+export const SettingsCard = styled.Pressable`
     display: flex;
     flex-direction: row;
     justify-content: space-between;

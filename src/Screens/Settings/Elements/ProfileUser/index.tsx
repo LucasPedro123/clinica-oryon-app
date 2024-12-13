@@ -29,21 +29,12 @@ export const ProfileUser: React.FC = ({ navigation }: any) => {
     const [birthDateActive, setBirthDateActive] = useState(false);
     const [tempBirthDate, setTempBirthDate] = useState(context?.User?.birthDate || '');
 
-    // Função para converter string 'DD/MM/YYYY' para Timestamp
-    function convertToTimestamp(dateStr: string) {
-        const [day, month, year] = dateStr.split('/');
-        const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-        return Timestamp.fromDate(dateObj);
-    }
-
-    // Função para converter a data de 'DD/MM/YYYY' para ISO 8601
     function convertToISOString(dateStr: string) {
         const [day, month, year] = dateStr.split('/');
         const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
         return dateObj.toISOString();
     }
 
-    // Função para formatar ISO para 'DD/MM/YYYY'
     function formatToDDMMYYYY(isoDate: string) {
         const dateObj = new Date(isoDate);
         const day = String(dateObj.getDate()).padStart(2, '0');
@@ -52,10 +43,6 @@ export const ProfileUser: React.FC = ({ navigation }: any) => {
         return `${day}/${month}/${year}`;
     }
 
-
-
-
-    // Função para validar o formato 'DD/MM/YYYY'
     function isValidDateFormat(date: string) {
         const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
         return dateRegex.test(date);
@@ -65,13 +52,11 @@ export const ProfileUser: React.FC = ({ navigation }: any) => {
         if (!context?.User?.id) return;
 
         try {
-            // Verificar se o formato da data é válido
             if (!isValidDateFormat(tempBirthDate)) {
                 setTempBirthDate(context?.User?.birthDate?.toDate().toLocaleDateString() || '');
                 return;
             }
 
-            // Converter para o formato ISO 8601
             const birthDateISO = convertToISOString(tempBirthDate);
 
             const userRef = doc(db, 'users', context.User.id);
@@ -210,9 +195,6 @@ export const ProfileUser: React.FC = ({ navigation }: any) => {
         navigation.navigate('SupportCenter');
     }
 
-    console.log(context?.User.birthDate)
-
-
     return (
         <S.Container>
             <S.ProfileContent onPress={pickImage}>
@@ -276,7 +258,7 @@ export const ProfileUser: React.FC = ({ navigation }: any) => {
                         <S.ProfileInfoValue>
                             {context?.User?.birthDate && typeof context.User.birthDate.toDate === 'function'
                                 ? formatToDDMMYYYY(context.User.birthDate.toDate().toISOString())
-                                : formatToDDMMYYYY(context?.User.birthDate)
+                                : formatToDDMMYYYY(context?.User?.birthDate)
                             }
                         </S.ProfileInfoValue>
                     )}
@@ -300,34 +282,30 @@ export const ProfileUser: React.FC = ({ navigation }: any) => {
                         <S.ProfileInfoValue>{context?.User?.phone}</S.ProfileInfoValue>
                     )}
                 </S.ProfileInfoView>
-                <S.ProfileInfoView>
-                    <S.ProfileInfoValue>{context?.User?.email}</S.ProfileInfoValue>
-                </S.ProfileInfoView>
                 <S.SettingsCards>
-                    <S.SettingsCard>
+                    <S.SettingsCard onPress={handleNavigateSupportCenter}>
                         <S.CardWrapper>
-
                             <S.CardName>Notificações</S.CardName>
                         </S.CardWrapper>
-                        <TouchableOpacity onPress={handleNavigateNotifications}>
+                        <TouchableOpacity >
                             <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
                         </TouchableOpacity>
                     </S.SettingsCard>
-                    <S.SettingsCard>
+                    <S.SettingsCard onPress={handleNavigateSupportCenter}>
                         <S.CardWrapper>
 
                             <S.CardName>Configurações de Login</S.CardName>
                         </S.CardWrapper>
-                        <TouchableOpacity onPress={handleNavigateUserConfig}>
+                        <TouchableOpacity>
                             <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
                         </TouchableOpacity>
                     </S.SettingsCard>
-                    <S.SettingsCard>
+                    <S.SettingsCard onPress={handleNavigateSupportCenter}>
                         <S.CardWrapper>
 
                             <S.CardName>Centro de Suporte</S.CardName>
                         </S.CardWrapper>
-                        <TouchableOpacity onPress={handleNavigateSupportCenter}>
+                        <TouchableOpacity>
                             <MaterialIcons name="arrow-forward-ios" size={24} color={`${STYLE_GUIDE.Colors.primary}`} />
                         </TouchableOpacity>
                     </S.SettingsCard>
