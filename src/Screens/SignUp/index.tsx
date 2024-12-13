@@ -10,6 +10,7 @@ import logo from '../../../assets/logoApp.png';
 import axios from 'axios'; // Import axios for API request
 import { UserContext } from '../../Context/User.context';
 import { STYLE_GUIDE } from '../../Styles/global';
+import * as Notifications from 'expo-notifications'
 
 const db = getFirestore();
 
@@ -83,6 +84,16 @@ export default function SignUp({ navigation }: any) {
         setPasswordError(!isPasswordValid);
         setBirthDateError(!isBirthDateValid);
 
+        const { status } = await Notifications.getPermissionsAsync();
+        if (status !== 'granted') {
+            const { status: newStatus } = await Notifications.requestPermissionsAsync();
+            if (newStatus !== 'granted') {
+                throw new Error('Permissão para notificações negada.');
+            }
+        }
+        
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+
         if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isBirthDateValid) {
             setGeneralError('Por favor, verifique seus dados.');
             return;
@@ -116,6 +127,7 @@ export default function SignUp({ navigation }: any) {
                 phone: phone.replace(/\D/g, ''),
                 password,
                 photoURL,
+                token: token,
                 birthDate: birthDate?.toISOString()
             });
 
@@ -168,7 +180,7 @@ export default function SignUp({ navigation }: any) {
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={{paddingTop: '20%'}}  keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{paddingTop: '10%'}}  keyboardShouldPersistTaps="handled">
             <S.ContainerSignIn style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}} >
                 <S.LogoContainer>
                     <S.Logo source={logo} />
@@ -239,7 +251,8 @@ export default function SignUp({ navigation }: any) {
 
                                     display="spinner"
                                     onChange={handleDateChange}
-                                    maximumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 12))}
+                                    minimumDate={new Date(new Date().setFullYear(new Date().getFullYear() -100))}
+                                    maximumDate={new Date(new Date().setFullYear(new Date().getFullYear()))}
                                     positiveButton={{ label: 'OK', textColor: STYLE_GUIDE.Colors.secundary }}
                                     negativeButton={{ label: 'Cancel', textColor: STYLE_GUIDE.Colors.secundary }}
                                 />
