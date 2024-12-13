@@ -26,7 +26,7 @@ export const CardAbout: React.FC = () => {
       <S.Container>
         <S.CardWrapper>
           <S.ImageWrapper>
-            <S.CardImage source={typeof image === 'string' ? { uri: image } : image} />
+            <S.CardImage source={image} />
             <S.Line />
           </S.ImageWrapper>
           <S.CardTitle>{title}</S.CardTitle>

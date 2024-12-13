@@ -25,10 +25,11 @@ export const WrapperRow = styled.View`
     gap: 9px;
 `
 export const AndressText = styled.Text`
-    font-family: 'Raleway';
-    font-weight: 600;
-    font-size: 16px;
-    color: #2D2D2D;
+    
+    font-weight: ${STYLE_GUIDE.FontWeight.bold};
+    font-size: ${STYLE_GUIDE.FontSize.subHead400};
+    color: ${STYLE_GUIDE.Colors.gray200};
+
 `
 
 export const CardWrapper = styled.View`
@@ -38,10 +39,10 @@ export const CardWrapper = styled.View`
 `;
 
 export const CardTitle = styled.Text`
-    font-family: 'Raleway';
+    
     font-weight: 700;
     font-size: 20px;
-    color: #2D2D2D;
+    color: ${STYLE_GUIDE.Colors.gray300};
     align-self: flex-start;
 `;
 
@@ -62,11 +63,10 @@ export const Line = styled.View`
 `
 
 export const CardDescription = styled.Text`
-    font-family: 'Raleway';
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 20px;
-    color: ${STYLE_GUIDE.Colors.gray100};
+    
+    font-weight: ${STYLE_GUIDE.FontWeight.bold};
+    font-size: ${STYLE_GUIDE.FontSize.subHead300};
+    color: ${STYLE_GUIDE.Colors.gray200};
     align-self: flex-start;
 `;
 
@@ -75,10 +75,10 @@ export const Wrapper = styled.View`
 `
 
 export const Description = styled.Text`
-    font-family: 'Raleway';
+    
     font-weight: ${STYLE_GUIDE.FontWeight.bold};
     font-size: 16px;
-    color: #2D2D2D;
+    color: ${STYLE_GUIDE.Colors.gray300};
     align-self: flex-start;
 
 `

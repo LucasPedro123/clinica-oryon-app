@@ -14,7 +14,7 @@ export const Cards = styled.View`
     flex-direction: row;
     gap: 22px;
     height: 100%;
-    padding: 20px 24px;
+    padding: 20px 29px;
 `
 export const Card = styled.View`
     display: flex;
@@ -50,9 +50,9 @@ export const CardTitle = styled.Text`
     color: ${STYLE_GUIDE.Colors.title};
 `
 export const CardDescription = styled.Text`
-    font-family: 'Raleway';
-    font-weight: 600;
-    color: ${STYLE_GUIDE.Colors.gray100};
+    font-weight: 700;
+    color: ${STYLE_GUIDE.Colors.title};
+    opacity: 0.3;
     font-size: ${STYLE_GUIDE.FontSize.description};
     line-height: 14px;
     margin-bottom: 15px;
