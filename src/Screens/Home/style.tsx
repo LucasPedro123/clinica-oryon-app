@@ -20,7 +20,7 @@ export const ProfileContent = styled.View`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 61px 24px 0px ;
+    padding: 61px 29px 0px ;
     z-index: -1;
 
 `

@@ -14,14 +14,6 @@ import { useNotification } from '../../Context/Notifications.context';
 import { isNotificationRead } from '../../utils/notificationStorage'
 import Octicons from '@expo/vector-icons/Octicons';
 
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
-});
-
 export default function Home({ navigation }: any) {
     const context = useContext(UserContext);
     const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
@@ -44,48 +36,6 @@ export default function Home({ navigation }: any) {
             checkUnreadNotifications();
         }, [notifications])
     );
-
-    async function scheduleNotifications() {
-        try {
-            const { status } = await Notifications.requestPermissionsAsync();
-            if (status !== 'granted') {
-                console.log('Permissão para notificações não concedida.');
-                return;
-            }
-
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: `Olá, ${context?.User.name}!`,
-                    body: 'Já fez o cálculo das calorias de hoje? Mantenha seu progresso em dia!',
-                    data: { type: 'calories', userId: context?.userId },
-                },
-                trigger: {
-                    hour: 9,
-                    minute: 0,
-                    repeats: false,
-                },
-            });
-
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: `Boa noite, ${context?.User.name}!`,
-                    body: 'Veja o resumo das calorias que você consumiu hoje. Está dentro da sua meta?',
-                    data: { type: 'calories', userId: context?.userId },
-                },
-                trigger: {
-                    hour: 20,
-                    minute: 0,
-                    repeats: true,
-                },
-            });
-        } catch (error: any) {
-            console.log('Erro ao agendar notificações', error.message);
-        }
-    }
-
-    useEffect(() => {
-        scheduleNotifications();
-    }, []);
 
     function handleNavigatorForProfile() {
         navigation.navigate('ProfileUser');
