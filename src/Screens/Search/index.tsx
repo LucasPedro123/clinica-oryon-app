@@ -1,4 +1,4 @@
-import React, { FC, useContext, useRef, useState, useEffect,  } from 'react';
+import React, { FC, useContext, useRef, useState, useEffect, } from 'react';
 import { ScrollView, ActivityIndicator, TouchableOpacity, Pressable, Text, View, TextInput, StatusBar } from 'react-native';
 import * as S from './style';
 import { Feather, AntDesign } from '@expo/vector-icons';
@@ -8,7 +8,9 @@ import logo from '../../../assets/logoApp.png';
 import { UserContext } from '../../Context/User.context';
 import { Modalize } from 'react-native-modalize';
 import { useFoodContext } from '../../Context/Foods.context';
-import {  Timestamp} from 'firebase/firestore';
+import { doc, Timestamp, updateDoc } from 'firebase/firestore';
+import { Food } from '../../Interfaces/app.interfaces';
+import { db } from '../../Services/fireConfig';
 
 interface Props {
     navigation: any;
@@ -29,22 +31,47 @@ const Search: React.FC<Props> = ({ navigation }) => {
         return focus;
     }, [navigation]);
 
-    const handleAddFood = (food: any) => {
+    const handleAddFood = (food: Food) => {
         context?.setNewFood(food);
-        const newFood = { ...food, date: Timestamp.now() };
-        context?.setFoods(prevFoods => [...prevFoods, newFood]);
-        navigation.navigate('Home');
-        setSearchTerm('')
+        const newFood: Food = { ...food, date: Timestamp.now() };
+        context?.setFoods([...context.foods, newFood]);  
     };
+    
+
+    const handleSubtractFood = async (food: Food) => {
+        context?.removeFood(food);
+    };
+
+
 
     const onOpen = (food: any) => {
         setSelectedFood(food);
         modalizeRef.current?.open();
     };
 
+    function VerifyFoodByIdToday(item: Food): number {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Define o início do dia de hoje
+    
+        const foundFood = context?.foods.filter((e: Food) => {
+    
+            const foodDate = new Date(e.date); // Converte a string em objeto Date
+            if (isNaN(foodDate.getTime())) {
+                return false; // Ignora se a data não puder ser convertida
+            }
+    
+            return (
+                e._id === item._id &&
+                foodDate.setHours(0, 0, 0, 0) === today.getTime() // Compara apenas a data
+            );
+        });
+    
+        return foundFood ? foundFood.length : 0;
+    }
+    
+    
     return (
         <>
-            
             <ScrollView>
                 <S.SearchContainer>
                     <S.ImageLogo source={logo} />
@@ -56,7 +83,7 @@ const Search: React.FC<Props> = ({ navigation }) => {
                                 placeholder="Pesquisar"
                                 value={searchTerm}
                                 onChangeText={setSearchTerm}
-                                onSubmitEditing={() => {}}
+                                onSubmitEditing={() => { }}
                             />
                         </S.FormInputContent>
                     </S.FormContainer>
@@ -64,18 +91,26 @@ const Search: React.FC<Props> = ({ navigation }) => {
                         <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} style={{ marginTop: 24 }} />
                     ) : (
                         <S.FootItems>
-                            {foodItems.slice(0, 30).map((item, index) => (
+                            {foodItems.slice(0, 30).map((item : Food, index) => (
                                 <Pressable key={index} onPress={() => onOpen(item)}>
                                     <S.FootItem>
                                         <S.FootNameWrapper>
-                                            <S.FootTitle>{item.name.substring(0, 19)}</S.FootTitle>
-                                            <S.FootSubTitle>{item.portion.substring(0, 20)}</S.FootSubTitle>
+                                            <S.FootTitle>{item.name.substring(0, 15)}</S.FootTitle>
+                                            <S.FootSubTitle>{item.portion.substring(0, 19)}</S.FootSubTitle>
                                         </S.FootNameWrapper>
                                         <S.ButtonAdd>
                                             <S.FootCalories>{item.calories} kcal</S.FootCalories>
-                                            <TouchableOpacity onPress={() => handleAddFood(item)}>
-                                                <AntDesign name="pluscircle" size={31} color={STYLE_GUIDE.Colors.secundary} />
-                                            </TouchableOpacity>
+                                            <S.Wrapper>
+                                                <TouchableOpacity onPress={() => context?.foods.find((e : Food)=> e.id == item.id ? handleSubtractFood(e) : '')}>
+                                                    <AntDesign name="minuscircle" size={31} color={STYLE_GUIDE.Colors.secundary} />
+                                                </TouchableOpacity>
+                                                <Text>
+                                                    {VerifyFoodByIdToday(item)}
+                                                </Text>
+                                                <TouchableOpacity onPress={() => handleAddFood(item)}>
+                                                    <AntDesign name="pluscircle" size={31} color={STYLE_GUIDE.Colors.secundary} />
+                                                </TouchableOpacity>
+                                            </S.Wrapper>
                                         </S.ButtonAdd>
                                     </S.FootItem>
                                 </Pressable>
