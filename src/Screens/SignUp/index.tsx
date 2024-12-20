@@ -36,6 +36,17 @@ export default function SignUp({ navigation }: any) {
     const [isLoading, setIsLoading] = useState(false); // State to manage loading state
     const [phoneFormated, setphoneFormated] = useState(''); // State to manage loading state
 
+    async function SetNotificationPermissions() {
+        const { status } = await Notifications.getPermissionsAsync();
+        if (status !== 'granted') {
+            const { status: newStatus } = await Notifications.requestPermissionsAsync();
+            if (newStatus !== 'granted') {
+                throw new Error('Permissão para notificações negada.');
+            }
+        }
+    }
+    SetNotificationPermissions();
+
     const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // State to store device height
 
     const validateEmail = (email: string) => {
@@ -59,66 +70,39 @@ export default function SignUp({ navigation }: any) {
         setPhone(formattedPhoneNumber);
     };
 
-
-
-    const verifyEmail = async (email: string) => {
-        try {
-            const response = await axios.get(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=e5acd40e421ecda5fd71ccf9426e50c17e19a536`);
-            return response.data.data.status === 'valid';
-        } catch (error) {
-            console.error('Erro ao verificar email:', error);
-            return false;
-        }
-    };
-
     const handleSignUp = async () => {
         const isNameValid = name.trim() !== '';
         const isEmailValid = validateEmail(email);
         const isPhoneValid = validatePhone(phone);
         const isPasswordValid = password.trim() !== '';
         const isBirthDateValid = birthDate !== null;
-
+    
         setNameError(!isNameValid);
         setEmailError(!isEmailValid);
         setPhoneError(!isPhoneValid);
         setPasswordError(!isPasswordValid);
         setBirthDateError(!isBirthDateValid);
-
-        const { status } = await Notifications.getPermissionsAsync();
-        if (status !== 'granted') {
-            const { status: newStatus } = await Notifications.requestPermissionsAsync();
-            if (newStatus !== 'granted') {
-                throw new Error('Permissão para notificações negada.');
-            }
-        }
-        
-        const token = (await Notifications.getExpoPushTokenAsync()).data;
-
+    
         if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isBirthDateValid) {
             setGeneralError('Por favor, verifique seus dados.');
             return;
         }
-
+    
         try {
             setIsLoading(true);
-
-            const isEmailExist = await verifyEmail(email);
-            if (!isEmailExist) {
-                setEmailError(true);
-                setGeneralError('Email não existe ou é inválido.');
-                return;
-            }
-            setEmailError(false);
+    
             const signInMethods = await fetchSignInMethodsForEmail(auth, email);
             if (signInMethods.length > 0) {
                 setEmailError(true);
                 setGeneralError('Email já está em uso.');
                 return;
             }
-
+    
+            const token = (await Notifications.getExpoPushTokenAsync()).data;
+    
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const userId = userCredential.user.uid;
-
+    
             const userDocRef = await addDoc(collection(db, 'users'), {
                 userId,
                 name,
@@ -130,11 +114,11 @@ export default function SignUp({ navigation }: any) {
                 token: token,
                 birthDate: birthDate?.toISOString()
             });
-
+    
             const firestoreId = userDocRef.id;
-
+    
             await updateDoc(userDocRef, { firestoreId });
-
+    
             context?.setUser({
                 userId,
                 firestoreId,
@@ -146,14 +130,14 @@ export default function SignUp({ navigation }: any) {
                 photoURL,
                 birthDate: birthDate?.toISOString(),
             });
-
+    
             navigation.navigate('signin');
         } catch (error: any) {
             if (error.code === 'auth/email-already-in-use') {
                 setEmailError(true);
                 setGeneralError('Email já está em uso.');
             } else if (error.code === "auth/weak-password") {
-                setGeneralError('Senha fraca');
+                setGeneralError('Senha fraca.');
             }
             console.log(error.code);
         } finally {
