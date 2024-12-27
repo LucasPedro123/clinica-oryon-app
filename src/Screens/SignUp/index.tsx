@@ -7,10 +7,8 @@ import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'fire
 import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc } from 'firebase/firestore';
 import { auth } from '../../Services/fireConfig';
 import logo from '../../../assets/logoApp.png';
-import axios from 'axios'; // Import axios for API request
 import { UserContext } from '../../Context/User.context';
 import { STYLE_GUIDE } from '../../Styles/global';
-import * as Notifications from 'expo-notifications'
 
 const db = getFirestore();
 
@@ -36,16 +34,6 @@ export default function SignUp({ navigation }: any) {
     const [isLoading, setIsLoading] = useState(false); // State to manage loading state
     const [phoneFormated, setphoneFormated] = useState(''); // State to manage loading state
 
-    async function SetNotificationPermissions() {
-        const { status } = await Notifications.getPermissionsAsync();
-        if (status !== 'granted') {
-            const { status: newStatus } = await Notifications.requestPermissionsAsync();
-            if (newStatus !== 'granted') {
-                throw new Error('Permissão para notificações negada.');
-            }
-        }
-    }
-    SetNotificationPermissions();
 
     const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // State to store device height
 
@@ -70,80 +58,78 @@ export default function SignUp({ navigation }: any) {
         setPhone(formattedPhoneNumber);
     };
 
-    const handleSignUp = async () => {
-        const isNameValid = name.trim() !== '';
-        const isEmailValid = validateEmail(email);
-        const isPhoneValid = validatePhone(phone);
-        const isPasswordValid = password.trim() !== '';
-        const isBirthDateValid = birthDate !== null;
-    
-        setNameError(!isNameValid);
-        setEmailError(!isEmailValid);
-        setPhoneError(!isPhoneValid);
-        setPasswordError(!isPasswordValid);
-        setBirthDateError(!isBirthDateValid);
-    
-        if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isBirthDateValid) {
-            setGeneralError('Por favor, verifique seus dados.');
-            return;
-        }
-    
-        try {
-            setIsLoading(true);
-    
-            const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-            if (signInMethods.length > 0) {
-                setEmailError(true);
-                setGeneralError('Email já está em uso.');
+        const handleSignUp = async () => {
+            const isNameValid = name.trim() !== '';
+            const isEmailValid = validateEmail(email);
+            const isPhoneValid = validatePhone(phone);
+            const isPasswordValid = password.trim() !== '';
+            const isBirthDateValid = birthDate !== null;
+        
+            setNameError(!isNameValid);
+            setEmailError(!isEmailValid);
+            setPhoneError(!isPhoneValid);
+            setPasswordError(!isPasswordValid);
+            setBirthDateError(!isBirthDateValid);
+        
+            if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isBirthDateValid) {
+                setGeneralError('Por favor, verifique seus dados.');
                 return;
             }
-    
-            const token = (await Notifications.getExpoPushTokenAsync()).data;
-    
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const userId = userCredential.user.uid;
-    
-            const userDocRef = await addDoc(collection(db, 'users'), {
-                userId,
-                name,
-                surname,
-                email,
-                phone: phone.replace(/\D/g, ''),
-                password,
-                photoURL,
-                token: token,
-                birthDate: birthDate?.toISOString()
-            });
-    
-            const firestoreId = userDocRef.id;
-    
-            await updateDoc(userDocRef, { firestoreId });
-    
-            context?.setUser({
-                userId,
-                firestoreId,
-                name,
-                surname,
-                email,
-                phone: phone.replace(/\D/g, ''),
-                password,
-                photoURL,
-                birthDate: birthDate?.toISOString(),
-            });
-    
-            navigation.navigate('signin');
-        } catch (error: any) {
-            if (error.code === 'auth/email-already-in-use') {
-                setEmailError(true);
-                setGeneralError('Email já está em uso.');
-            } else if (error.code === "auth/weak-password") {
-                setGeneralError('Senha fraca.');
+        
+            try {
+                setIsLoading(true);
+        
+                const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+                if (signInMethods.length > 0) {
+                    setEmailError(true);
+                    setGeneralError('Email já está em uso.');
+                    return;
+                }
+        
+        
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const userId = userCredential.user.uid;
+        
+                const userDocRef = await addDoc(collection(db, 'users'), {
+                    userId,
+                    name,
+                    surname,
+                    email,
+                    phone: phone.replace(/\D/g, ''),
+                    password,
+                    photoURL,
+                    birthDate: birthDate?.toISOString()
+                });
+        
+                const firestoreId = userDocRef.id;
+        
+                await updateDoc(userDocRef, { firestoreId });
+        
+                context?.setUser({
+                    userId,
+                    firestoreId,
+                    name,
+                    surname,
+                    email,
+                    phone: phone.replace(/\D/g, ''),
+                    password,
+                    photoURL,
+                    birthDate: birthDate?.toISOString(),
+                });
+        
+                navigation.navigate('signin');
+            } catch (error: any) {
+                if (error.code === 'auth/email-already-in-use') {
+                    setEmailError(true);
+                    setGeneralError('Email já está em uso.');
+                } else if (error.code === "auth/weak-password") {
+                    setGeneralError('Senha fraca.');
+                }
+                console.log(error.code);
+            } finally {
+                setIsLoading(false);
             }
-            console.log(error.code);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        };
 
 
     const handleNavigateForSignIn = () => {
