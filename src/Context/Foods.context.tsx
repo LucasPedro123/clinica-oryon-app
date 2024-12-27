@@ -11,7 +11,7 @@ const FoodProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     const fetchFoodItems = async () => {
         try {
-            const response = await axios.get('https://serverfood-egctccaegffdbway.eastus-01.azurewebsites.net/api/foods');
+            const response = await axios.get('https://food-data-json-bm8g.vercel.app/api/foods');
             const foods = response.data;
             setAllFoodItems(foods);
             setFoodItems(foods);
