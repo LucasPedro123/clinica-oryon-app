@@ -21,7 +21,7 @@ const Search: React.FC<Props> = ({ navigation }) => {
     const inputRef = useRef<TextInput>(null);
     const [selectedFood, setSelectedFood] = useState<any>(null);
     const context = useContext(UserContext);
-    const { foodItems, searchTerm, setSearchTerm } = useFoodContext(); // Usar o contexto de alimentos
+    const { foodItems, searchTerm, setSearchTerm } = useFoodContext(); 
 
     useEffect(() => {
         const focus = navigation.addListener('focus', () => {
@@ -51,18 +51,18 @@ const Search: React.FC<Props> = ({ navigation }) => {
 
     function VerifyFoodByIdToday(item: Food): number {
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Define o início do dia de hoje
+        today.setHours(0, 0, 0, 0);
     
         const foundFood = context?.foods.filter((e: Food) => {
     
-            const foodDate = new Date(e.date); // Converte a string em objeto Date
+            const foodDate = new Date(e.date); 
             if (isNaN(foodDate.getTime())) {
-                return false; // Ignora se a data não puder ser convertida
+                return false; 
             }
     
             return (
                 e._id === item._id &&
-                foodDate.setHours(0, 0, 0, 0) === today.getTime() // Compara apenas a data
+                foodDate.setHours(0, 0, 0, 0) === today.getTime() 
             );
         });
     
