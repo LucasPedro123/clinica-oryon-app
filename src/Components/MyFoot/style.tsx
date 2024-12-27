@@ -109,3 +109,9 @@ export const Button = styled.TouchableOpacity`
     align-items: center;
     justify-content: center;
 `
+
+export const Wrapper = styled.View`
+    flex-direction: row;
+    gap: 12px;
+    
+`

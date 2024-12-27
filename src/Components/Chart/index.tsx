@@ -27,7 +27,11 @@ const Chart = () => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
     const [dataHtml, setDataHtml] = useState<string>('');
 
+
+    const totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(0);
+
     let totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
+
     const averageCalories = data.length > 0 ? (data.reduce((total, item) => total + item.y, 0) / data.length).toFixed(2) : '0.00';
 
     const db = getFirestore();
@@ -73,9 +77,13 @@ const Chart = () => {
     useEffect(() => {
         fetchFoodData();
         if (context?.foods?.length > 0 && context?.User) {
+
+            let html = documentTable(context.foods, Number(totalCalories), context.User.name + context.User.surname, context.User.birthDate, context.userPhoto);
+
             totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
 
             let html = documentTable(context.foods, Number(totalCalories), context.User.name, context.User.birthDate);
+
             setDataHtml(html)
         }
     }, [context?.foods, context?.userId]);
@@ -128,12 +136,55 @@ const Chart = () => {
     }
 
     return (
-        <View style={{ flexGrow: 1 }}>
-            <S.Title>Gráfico</S.Title>
+        <S.Container >
             <S.ChartContainer style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 {loading ? (
                     <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} style={{ marginTop: 24 }} />
                 ) : (
+
+                    <S.Wrapper>
+                        <S.Content>
+                            <S.NumberTitle>
+                                {`${selectedCalories !== null ? `${selectedCalories.toFixed(0)}` : `${foodToday}`}`}
+                                <Text style={{ fontSize: 16 }}> Kcal do Dia</Text>
+                            </S.NumberTitle>
+                            <S.ChartItems>
+                                <S.ChartItem>
+                                    <S.ItemTitle>Média Semanal</S.ItemTitle>
+                                    <S.ItemValue>{averageCalories}</S.ItemValue>
+                                </S.ChartItem>
+                                <S.ChartItem>
+                                    <S.ItemTitle>Calorias Semanal</S.ItemTitle>
+                                    <S.ItemValue>{totalCalories} Kcal</S.ItemValue>
+                                </S.ChartItem>
+                                <Pressable onPress={() => setModalVisible(true)}>
+                                    <Ionicons name="settings" size={20} color={STYLE_GUIDE.Colors.primary} />
+                                </Pressable>
+                            </S.ChartItems>
+                        </S.Content>
+                        <S.ChartView>
+                            <BarChart
+                                barWidth={25}
+                                noOfSections={4}
+                                barBorderRadius={30}
+                                adjustToWidth
+                                data={data.map(item => ({
+                                    value: item.y || 0,
+                                    label: item.day,
+                                    frontColor: item.y < minCalories || item.y > maxCalories
+                                        ? STYLE_GUIDE.Colors.alert
+                                        : STYLE_GUIDE.Colors.secundary,
+                                    onPress: () => setSelectedCalories(item.y),
+                                }))}
+                                yAxisThickness={0}
+                                xAxisThickness={0}
+                                isAnimated
+                                animationDuration={1000}
+                                initialSpacing={5}
+                            />
+                        </S.ChartView>
+                    </S.Wrapper>
+
                     <>
                         <S.NumberTitle>
                             {selectedCalories !== null ? `${selectedCalories.toFixed(0)}` : `${foodToday}`}
@@ -177,6 +228,7 @@ const Chart = () => {
                             </S.ChartView>
                         </S.ChartBorderView>
                     </>
+
                 )}
             </S.ChartContainer>
 
@@ -196,12 +248,14 @@ const Chart = () => {
                 <Dialog visible={modalVisible} onDismiss={() => setModalVisible(false)} style={{ backgroundColor: '#fff' }}>
                     <S.modalTitle>Definir Limites de Calorias</S.modalTitle>
                     <Dialog.Content>
+                        <Text>Mínimo</Text>
                         <S.modalInput
                             placeholder="Mínimo de Calorias"
                             keyboardType="numeric"
                             value={minCalories.toString()}
                             onChangeText={text => setMinCalories(parseInt(text) || 0)}
                         />
+                        <Text>Máximo</Text>
                         <S.modalInput
                             placeholder="Máximo de Calorias"
                             keyboardType="numeric"
@@ -216,7 +270,7 @@ const Chart = () => {
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
-        </View>
+        </S.Container>
     );
 };
 

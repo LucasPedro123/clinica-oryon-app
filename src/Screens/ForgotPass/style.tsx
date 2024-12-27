@@ -4,18 +4,15 @@ import { STYLE_GUIDE } from '../../Styles/global'
 
 export const ForgotPassContainer = styled.View`
     flex: 1;
-    padding-left: 20px;
-    padding-right: 20px;
-    position: relative;
+    padding: 0 29px;
+    padding-top: 15%;
 `
 export const ForgotPassTitle = styled.Text`
 
     font-weight: 600;
     font-size: 20px;
-    line-height: 20px;
-    letter-spacing: -0.5px;
 
-    color: #828282;
+    color: ${STYLE_GUIDE.Colors.primary};
     margin-bottom: 18px;
     margin-top: 26px;
 
@@ -36,7 +33,6 @@ export const ForgotPassForm = styled.View`
     margin-top: 27px;
 `
 export const ForgotPassLabel = styled.Text`
-    font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: ${STYLE_GUIDE.FontSize.subHead400};
     line-height: 19px;
     color: ${STYLE_GUIDE.Colors.primary};

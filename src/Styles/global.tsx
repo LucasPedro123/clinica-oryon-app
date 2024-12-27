@@ -9,6 +9,7 @@ export const STYLE_GUIDE = {
         complement: "background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #FFFFFF",
         neutral: "#CCCCCC",
         borderColor: "#C6C6C6",
+        gray300: "#2D2D2D",
         gray100: "#4F4F4F",
         gray200: "#828282",
         grayLight: "#D9D9D9",

@@ -38,16 +38,15 @@ export const FormInputContent = styled.View`
 export const FootItems = styled.View`
     gap: 22px;
     margin: 26px 0px;
+    padding: 0 2%;
 `
 
 export const FootItem = styled.View`
     flex-direction: row;
-    align-items: flex-start;
     justify-content: space-between;
     padding: 13px 22px;
-    gap: 30px;
 
-    width: 383px;
+    width: 100%;
     height: 68px;
     background-color: ${STYLE_GUIDE.Colors.white};
     border-radius: 12px;
@@ -64,7 +63,6 @@ export const FootNameWrapper = styled.View`
 `
 
 export const FootTitle = styled.Text`
-
     font-weight: ${STYLE_GUIDE.FontWeight.semiBold};
     font-size: ${STYLE_GUIDE.FontSize.subHead300};
     line-height: 22px;
@@ -139,3 +137,10 @@ export const ModalText = styled.Text`
     color: ${STYLE_GUIDE.Colors.black};
     margin-bottom: 10px;
 `;
+
+export const Wrapper = styled.View`
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+`

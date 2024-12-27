@@ -7,7 +7,6 @@ import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'fire
 import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc } from 'firebase/firestore';
 import { auth } from '../../Services/fireConfig';
 import logo from '../../../assets/logoApp.png';
-import axios from 'axios'; // Import axios for API request
 import { UserContext } from '../../Context/User.context';
 import { STYLE_GUIDE } from '../../Styles/global';
 
@@ -35,6 +34,7 @@ export default function SignUp({ navigation }: any) {
     const [isLoading, setIsLoading] = useState(false); // State to manage loading state
     const [phoneFormated, setphoneFormated] = useState(''); // State to manage loading state
 
+
     const [screenHeight, setScreenHeight] = useState(Dimensions.get('window').height); // State to store device height
 
     const validateEmail = (email: string) => {
@@ -58,96 +58,78 @@ export default function SignUp({ navigation }: any) {
         setPhone(formattedPhoneNumber);
     };
 
-
-
-    const verifyEmail = async (email: string) => {
-        try {
-            const response = await axios.get(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=e5acd40e421ecda5fd71ccf9426e50c17e19a536`);
-            return response.data.data.status === 'valid';
-        } catch (error) {
-            console.error('Erro ao verificar email:', error);
-            return false;
-        }
-    };
-
-    const handleSignUp = async () => {
-        const isNameValid = name.trim() !== '';
-        const isEmailValid = validateEmail(email);
-        const isPhoneValid = validatePhone(phone);
-        const isPasswordValid = password.trim() !== '';
-        const isBirthDateValid = birthDate !== null;
-
-        setNameError(!isNameValid);
-        setEmailError(!isEmailValid);
-        setPhoneError(!isPhoneValid);
-        setPasswordError(!isPasswordValid);
-        setBirthDateError(!isBirthDateValid);
-
-        if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isBirthDateValid) {
-            setGeneralError('Por favor, verifique seus dados.');
-            return;
-        }
-
-        try {
-            setIsLoading(true);
-
-            const isEmailExist = await verifyEmail(email);
-            if (!isEmailExist) {
-                setEmailError(true);
-                setGeneralError('Email não existe ou é inválido.');
+        const handleSignUp = async () => {
+            const isNameValid = name.trim() !== '';
+            const isEmailValid = validateEmail(email);
+            const isPhoneValid = validatePhone(phone);
+            const isPasswordValid = password.trim() !== '';
+            const isBirthDateValid = birthDate !== null;
+        
+            setNameError(!isNameValid);
+            setEmailError(!isEmailValid);
+            setPhoneError(!isPhoneValid);
+            setPasswordError(!isPasswordValid);
+            setBirthDateError(!isBirthDateValid);
+        
+            if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isBirthDateValid) {
+                setGeneralError('Por favor, verifique seus dados.');
                 return;
             }
-            setEmailError(false);
-            const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-            if (signInMethods.length > 0) {
-                setEmailError(true);
-                setGeneralError('Email já está em uso.');
-                return;
+        
+            try {
+                setIsLoading(true);
+        
+                const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+                if (signInMethods.length > 0) {
+                    setEmailError(true);
+                    setGeneralError('Email já está em uso.');
+                    return;
+                }
+        
+        
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const userId = userCredential.user.uid;
+        
+                const userDocRef = await addDoc(collection(db, 'users'), {
+                    userId,
+                    name,
+                    surname,
+                    email,
+                    phone: phone.replace(/\D/g, ''),
+                    password,
+                    photoURL,
+                    birthDate: birthDate?.toISOString()
+                });
+        
+                const firestoreId = userDocRef.id;
+        
+                await updateDoc(userDocRef, { firestoreId });
+        
+                context?.setUser({
+                    userId,
+                    firestoreId,
+                    name,
+                    surname,
+                    email,
+                    phone: phone.replace(/\D/g, ''),
+                    password,
+                    photoURL,
+                    birthDate: birthDate?.toISOString(),
+                });
+        
+                navigation.navigate('signin');
+            } catch (error: any) {
+                if (error.code === 'auth/email-already-in-use') {
+                    setEmailError(true);
+                    setGeneralError('Email já está em uso.');
+                } else if (error.code === "auth/weak-password") {
+                    setGeneralError('Senha fraca.');
+                }
+                console.log(error.code);
+            } finally {
+                setIsLoading(false);
             }
-
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const userId = userCredential.user.uid;
-
-            const userDocRef = await addDoc(collection(db, 'users'), {
-                userId,
-                name,
-                surname,
-                email,
-                phone: phone.replace(/\D/g, ''),
-                password,
-                photoURL,
-                birthDate: birthDate?.toISOString()
-            });
-
-            const firestoreId = userDocRef.id;
-
-            await updateDoc(userDocRef, { firestoreId });
-
-            context?.setUser({
-                userId,
-                firestoreId,
-                name,
-                surname,
-                email,
-                phone: phone.replace(/\D/g, ''),
-                password,
-                photoURL,
-                birthDate: birthDate?.toISOString(),
-            });
-
-            navigation.navigate('signin');
-        } catch (error: any) {
-            if (error.code === 'auth/email-already-in-use') {
-                setEmailError(true);
-                setGeneralError('Email já está em uso.');
-            } else if (error.code === "auth/weak-password") {
-                setGeneralError('Senha fraca');
-            }
-            console.log(error.code);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        };
 
 
     const handleNavigateForSignIn = () => {
@@ -168,7 +150,7 @@ export default function SignUp({ navigation }: any) {
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={{paddingTop: '20%'}}  keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{paddingTop: '10%'}}  keyboardShouldPersistTaps="handled">
             <S.ContainerSignIn style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}} >
                 <S.LogoContainer>
                     <S.Logo source={logo} />
@@ -239,7 +221,8 @@ export default function SignUp({ navigation }: any) {
 
                                     display="spinner"
                                     onChange={handleDateChange}
-                                    maximumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 12))}
+                                    minimumDate={new Date(new Date().setFullYear(new Date().getFullYear() -100))}
+                                    maximumDate={new Date(new Date().setFullYear(new Date().getFullYear()))}
                                     positiveButton={{ label: 'OK', textColor: STYLE_GUIDE.Colors.secundary }}
                                     negativeButton={{ label: 'Cancel', textColor: STYLE_GUIDE.Colors.secundary }}
                                 />
