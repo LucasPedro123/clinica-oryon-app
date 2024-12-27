@@ -29,6 +29,7 @@ import { SupportCenter } from '../Screens/Settings/Elements/Support';
 import { Notifications } from '../Screens/Settings/Elements/Notification';
 import { NotificationDetails } from '../Screens/Settings/Elements/Notification/NotificationDetails';
 import { ConfigLoginScreen } from '../Screens/Settings/Elements/ConfigLogin';
+import { OnBoarding } from '../Screens/OnBoarding';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -154,6 +155,26 @@ export default function MainRoutes() {
     const context = useContext(UserContext);
     const [isLogged, setIsLogged] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isAppFirstLaunched, setIsAppFirstLaunched] = useState<boolean | null>(null)
+
+    useEffect( () => {
+        const checkFirstLaunch = async () => {
+            try {
+                const appData = await AsyncStorage.getItem('isAppFirstLaunched');
+                
+                if (appData == null) {
+                    setIsAppFirstLaunched(true);
+                    await AsyncStorage.setItem('isAppFirstLaunched', 'false');
+                } else {
+                    setIsAppFirstLaunched(false);
+                }
+            } catch (error) {
+                console.error('Erro ao acessar AsyncStorage:', error);
+            }
+        };
+    
+        checkFirstLaunch();
+    }, [])
 
     useEffect(() => {
         const checkPersistedAuth = async () => {
@@ -187,26 +208,35 @@ export default function MainRoutes() {
     }, []);
 
     if (isLoading) {
-        return null; 
+        return null;
     }
 
     return (
         <>
             <StatusBar style='dark' />
-            <Stack.Navigator initialRouteName={isLogged ? 'MainTabs' : 'signin'}>
+            <Stack.Navigator initialRouteName={isLogged ? 'MainTabs' : 'onboarding'}>
+                {
+                    isAppFirstLaunched ? 
+                        
+                    <Stack.Screen
+                    name='onboarding'
+                    component={OnBoarding}
+                    options={{ headerShown: false }}
+                /> : null
+                }
                 <Stack.Screen name='signin' component={SignIn} options={{ headerShown: false }} />
                 <Stack.Screen name='signup' component={SignUp} options={{ headerShown: false }} />
-                <Stack.Screen name='forgotpass' component={ForgotPass} options={{ headerShown: true, headerTitle: '' }} />
+                <Stack.Screen name='forgotpass' component={ForgotPass} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
                 <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }} />
                 <Stack.Screen name='CardDetails' component={CardDetails} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
                 <Stack.Screen name='CardAbout' component={CardAbout} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
-             
+
                 <Stack.Screen name='ProfileUser' component={ProfileUser} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
                 <Stack.Screen name='SupportCenter' component={SupportCenter} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
-               
+
                 <Stack.Screen name='Notifications' component={Notifications} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
                 <Stack.Screen name='NotificationDetails' component={NotificationDetails} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
-               
+
                 <Stack.Screen name='ConfigLogin' component={ConfigLoginScreen} options={{ headerShown: true, headerTitle: '', headerTransparent: true }} />
             </Stack.Navigator>
         </>
