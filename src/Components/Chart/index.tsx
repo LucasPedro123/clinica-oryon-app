@@ -134,8 +134,8 @@ const Chart = () => {
                     <S.Wrapper>
                         <S.Content>
                             <S.NumberTitle>
-                                {foodToday}
-                                <Text style={{ fontSize: 16 }}> Kcal Semanal</Text>
+                                {`${selectedCalories !== null ? `${selectedCalories.toFixed(0)}` : `${foodToday}`}`}
+                                <Text style={{ fontSize: 16 }}> Kcal do Dia</Text>
                             </S.NumberTitle>
                             <S.ChartItems>
                                 <S.ChartItem>
@@ -143,8 +143,8 @@ const Chart = () => {
                                     <S.ItemValue>{averageCalories}</S.ItemValue>
                                 </S.ChartItem>
                                 <S.ChartItem>
-                                    <S.ItemTitle>Calorias do Dia</S.ItemTitle>
-                                    <S.ItemValue>{`${selectedCalories !== null ? `${selectedCalories.toFixed(0)}` : `${totalCalories}`}`} Kcal</S.ItemValue>
+                                    <S.ItemTitle>Calorias Semanal</S.ItemTitle>
+                                    <S.ItemValue>{totalCalories} Kcal</S.ItemValue>
                                 </S.ChartItem>
                                 <Pressable onPress={() => setModalVisible(true)}>
                                     <Ionicons name="settings" size={20} color={STYLE_GUIDE.Colors.primary} />
