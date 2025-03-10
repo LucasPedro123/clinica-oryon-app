@@ -27,7 +27,11 @@ const Chart = () => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
     const [dataHtml, setDataHtml] = useState<string>('');
 
+
     const totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(0);
+
+    let totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
+
     const averageCalories = data.length > 0 ? (data.reduce((total, item) => total + item.y, 0) / data.length).toFixed(2) : '0.00';
 
     const db = getFirestore();
@@ -73,7 +77,13 @@ const Chart = () => {
     useEffect(() => {
         fetchFoodData();
         if (context?.foods?.length > 0 && context?.User) {
+
             let html = documentTable(context.foods, Number(totalCalories), context.User.name + context.User.surname, context.User.birthDate, context.userPhoto);
+
+            totalCalories = data.reduce((total, item) => total + item.y, 0).toFixed(2);
+
+            let html = documentTable(context.foods, Number(totalCalories), context.User.name, context.User.birthDate);
+
             setDataHtml(html)
         }
     }, [context?.foods, context?.userId]);
@@ -131,6 +141,7 @@ const Chart = () => {
                 {loading ? (
                     <ActivityIndicator size="large" color={STYLE_GUIDE.Colors.secundary} style={{ marginTop: 24 }} />
                 ) : (
+
                     <S.Wrapper>
                         <S.Content>
                             <S.NumberTitle>
@@ -173,6 +184,51 @@ const Chart = () => {
                             />
                         </S.ChartView>
                     </S.Wrapper>
+
+                    <>
+                        <S.NumberTitle>
+                            {selectedCalories !== null ? `${selectedCalories.toFixed(0)}` : `${foodToday}`}
+                            <Text style={{ fontSize: 16 }}> Kcal</Text>
+                        </S.NumberTitle>
+                        <S.ChartItems>
+                            <S.ChartItem>
+                                <S.ItemTitle>Média</S.ItemTitle>
+                                <S.ItemValue>{averageCalories}</S.ItemValue>
+                            </S.ChartItem>
+                            <S.ChartItem>
+                                <S.ItemTitle>Calorias</S.ItemTitle>
+                                <S.ItemValue>{`${totalCalories}`}</S.ItemValue>
+                            </S.ChartItem>
+                            <Pressable onPress={() => setModalVisible(true)}>
+                                <Ionicons name="settings" size={20} color={STYLE_GUIDE.Colors.primary} />
+                            </Pressable>
+                        </S.ChartItems>
+                        <S.ChartBorderView>
+                            <S.ChartView>
+                                <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                                    <BarChart
+                                        barWidth={22}
+                                        noOfSections={4}
+                                        barBorderRadius={30}
+                                        data={data.map(item => ({
+                                            value: item.y || 0,
+                                            label: item.day,
+                                            frontColor: item.y < minCalories || item.y > maxCalories
+                                                ? STYLE_GUIDE.Colors.alert
+                                                : STYLE_GUIDE.Colors.secundary,
+                                            onPress: () => setSelectedCalories(item.y),
+                                        }))}
+                                        yAxisThickness={0}
+                                        xAxisThickness={0}
+                                        disableScroll
+                                        animationDuration={1000}
+                                        initialSpacing={10}
+                                    />
+                                </View>
+                            </S.ChartView>
+                        </S.ChartBorderView>
+                    </>
+
                 )}
             </S.ChartContainer>
 
